@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'ovn::controller' do
 
   let :redhat_platform_params do {
-    :ovn_package_name            => 'openvswitch-ovn',
+    :ovn_controller_package_name => 'openvswitch-ovn-host',
     :ovn_controller_service_name => 'ovn-controller'
   }
   end
@@ -25,10 +25,10 @@ describe 'ovn::controller' do
         )
     end
 
-    it 'installs package' do
-      is_expected.to contain_package(platform_params[:ovn_package_name]).with(
+    it 'installs controller package' do
+      is_expected.to contain_package(platform_params[:ovn_controller_package_name]).with(
         :ensure => 'present',
-        :name   => platform_params[:ovn_package_name],
+        :name   => platform_params[:ovn_controller_package_name],
         :before => 'Service[controller]'
       )
     end

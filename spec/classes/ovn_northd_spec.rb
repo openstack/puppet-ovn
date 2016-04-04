@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'ovn::northd' do
 
   let :redhat_platform_params do {
-    :ovn_package_name       => 'openvswitch-ovn',
+    :ovn_northd_package_name => 'openvswitch-ovn-central',
     :ovn_northd_service_name => 'ovn-northd' 
   }
   end
@@ -22,9 +22,9 @@ describe 'ovn::northd' do
     end
 
     it 'installs package' do
-      is_expected.to contain_package(platform_params[:ovn_package_name]).with(
+      is_expected.to contain_package(platform_params[:ovn_northd_package_name]).with(
         :ensure => 'present',
-        :name   => platform_params[:ovn_package_name],
+        :name   => platform_params[:ovn_northd_package_name],
         :before => 'Service[northd]'
       )
     end

@@ -37,9 +37,9 @@ class ovn::controller(
                     Vs_config['external_ids:ovn-encap-ip']]
     }
 
-    package { $::ovn::params::ovn_package_name:
+    package { $::ovn::params::ovn_controller_package_name:
         ensure => present,
-        name   => $::ovn::params::ovn_package_name,
+        name   => $::ovn::params::ovn_controller_package_name,
         before => Service['controller']
     }
 
