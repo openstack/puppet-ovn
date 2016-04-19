@@ -6,6 +6,7 @@
 2. [Module Description - What the module does and why it is useful](#module-description)
 3. [Setup - The basics of getting started with ovn](#setup)
     * [What ovn affects](#what-ovn-affects)
+4. [Functional testing with Beaker-Rspec](#Beaker-Rspec)
 
 ## Overview
 
@@ -34,3 +35,17 @@ of its parameters
   would use to tunnel to this hypervisor.
 * ovn_encap_type - Encapsulation type to be used by this controller. Defaults
   to geneve
+
+## Beaker-Rspec
+
+This module has beaker-rspec tests.
+To run the tests on the default vagrant node:
+
+```shell
+bundle install
+bundle exec rake acceptance
+```
+
+For more information on writing and running beaker-rspec tests visit the documentation:
+
+* https://github.com/puppetlabs/beaker/wiki/How-to-Write-a-Beaker-Test-for-a-Module
