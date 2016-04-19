@@ -2,13 +2,7 @@ require 'spec_helper'
 
 describe 'ovn::northd' do
 
-  let :redhat_platform_params do {
-    :ovn_northd_package_name => 'openvswitch-ovn-central',
-    :ovn_northd_service_name => 'ovn-northd' 
-  }
-  end
-
-  shared_examples 'ovn northd' do
+  shared_examples_for 'ovn northd' do
     it 'includes params' do
       is_expected.to contain_class('ovn::params')
     end
@@ -30,16 +24,34 @@ describe 'ovn::northd' do
     end
   end
 
-  context 'on redhat' do
-    let :platform_params do redhat_platform_params end
+  on_supported_os({
+    :supported_os   => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts({
+        }))
+      end
 
-    let :facts do
-      {:osfamily => 'Redhat',
-      }
+      case facts[:osfamily]
+      when 'Debian'
+        let(:platform_params) do
+          {
+            :ovn_northd_package_name => 'ovn-central',
+            :ovn_northd_service_name => 'ovn-central'
+          }
+        end
+        it_behaves_like 'ovn northd'
+      when 'Redhat'
+        let(:platform_params) do
+          {
+            :ovn_northd_package_name => 'openvswitch-ovn-central',
+            :ovn_northd_service_name => 'ovn-northd'
+          }
+        end
+        it_behaves_like 'ovn northd'
+      end
     end
-
-    it_configures 'ovn northd'
   end
-
 end
 

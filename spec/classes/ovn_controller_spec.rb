@@ -2,13 +2,14 @@ require 'spec_helper'
 
 describe 'ovn::controller' do
 
-  let :redhat_platform_params do {
-    :ovn_controller_package_name => 'openvswitch-ovn-host',
-    :ovn_controller_service_name => 'ovn-controller'
-  }
+  let :params do
+    { :ovn_remote     => 'tcp:x.x.x.x:5000',
+      :ovn_encap_type => 'geneve',
+      :ovn_encap_ip   => '1.2.3.4'
+    }
   end
 
-  shared_examples 'ovn controller' do
+  shared_examples_for 'ovn controller' do
     it 'includes params' do
       is_expected.to contain_class('ovn::params')
     end
@@ -54,21 +55,33 @@ describe 'ovn::controller' do
     end
   end
 
-  context 'with redhat platform' do
-    let :params do {
-      :ovn_remote     => 'tcp:x.x.x.x:5000',
-      :ovn_encap_type => 'geneve',
-      :ovn_encap_ip   => '1.2.3.4'
-    }
+  on_supported_os({
+    :supported_os   => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts({
+        }))
+      end
+
+      case facts[:osfamily]
+      when 'Debian'
+        let :platform_params do
+          {
+            :ovn_controller_package_name => 'ovn-host',
+            :ovn_controller_service_name => 'ovn-host'
+          }
+        end
+        it_behaves_like 'ovn controller'
+      when 'Redhat'
+        let :platform_params do
+          {
+            :ovn_controller_package_name => 'openvswitch-ovn-host',
+            :ovn_controller_service_name => 'ovn-controller'
+          }
+        end
+        it_behaves_like 'ovn controller'
+      end
     end
-
-    let :facts do
-      {:osfamily => 'Redhat',
-      }
-    end
-
-    let :platform_params do redhat_platform_params end
-
-    it_configures 'ovn controller'
   end
 end

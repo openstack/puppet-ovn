@@ -10,9 +10,7 @@
 
 ## Overview
 
-Puppet module for the OVN project. At the moment this support OVN 
-installation in Redhat platforms only. One can add the support for
-other platforms by defining them in ovn::params module
+Puppet module for the OVN project.
 
 ## Module Description
 
