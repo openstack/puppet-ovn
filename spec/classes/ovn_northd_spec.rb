@@ -9,9 +9,11 @@ describe 'ovn::northd' do
 
     it 'starts northd' do
       is_expected.to contain_service('northd').with(
-        :ensure  => true,
-        :name    => platform_params[:ovn_northd_service_name],
-        :enable  => true,
+        :ensure    => true,
+        :name      => platform_params[:ovn_northd_service_name],
+        :enable    => true,
+        :hasstatus => platform_params[:ovn_northd_service_status],
+        :pattern   => platform_params[:ovn_northd_service_pattern],
       )
     end
 
@@ -37,16 +39,20 @@ describe 'ovn::northd' do
       when 'Debian'
         let(:platform_params) do
           {
-            :ovn_northd_package_name => 'ovn-central',
-            :ovn_northd_service_name => 'ovn-central'
+            :ovn_northd_package_name    => 'ovn-central',
+            :ovn_northd_service_name    => 'ovn-central',
+            :ovn_northd_service_status  => false,
+            :ovn_northd_service_pattern => 'ovn-northd'
           }
         end
         it_behaves_like 'ovn northd'
       when 'Redhat'
         let(:platform_params) do
           {
-            :ovn_northd_package_name => 'openvswitch-ovn-central',
-            :ovn_northd_service_name => 'ovn-northd'
+            :ovn_northd_package_name    => 'openvswitch-ovn-central',
+            :ovn_northd_service_name    => 'ovn-northd',
+            :ovn_northd_service_status  => true,
+            :ovn_northd_service_pattern => 'undef'
           }
         end
         it_behaves_like 'ovn northd'

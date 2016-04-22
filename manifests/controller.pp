@@ -6,20 +6,20 @@
 # === Parameters:
 #
 # [*ovn_remote*]
-#   URL of the remote ovsdb-server that manages ovn-nb and ovn-sb dbs
+#   (Required) URL of the remote ovsdb-server that manages ovn-nb and ovn-sb dbs
 #
 # [*ovn_encap_type*]
 #   (Optional) The encapsulation type to be used
 #   Defaults to 'geneve'
 #
 # [*ovn_encap_ip*]
-#   IP address of the hypervisor(in which this module is installed) to which
+#   (Required) IP address of the hypervisor(in which this module is installed) to which
 #   the other controllers would use to create a tunnel to this controller
 #
 class ovn::controller(
-    $ovn_remote = undef,
+    $ovn_remote,
+    $ovn_encap_ip,
     $ovn_encap_type = 'geneve',
-    $ovn_encap_ip = undef
 ) {
     include ::ovn::params
     include ::vswitch::ovs
@@ -29,12 +29,14 @@ class ovn::controller(
     validate_string($ovn_encap_ip)
 
     service { 'controller':
-        ensure  => true,
-        name    => $::ovn::params::ovn_controller_service_name,
-        enable  => true,
-        require => [Vs_config['external_ids:ovn-remote'],
-                    Vs_config['external_ids:ovn-encap-type'],
-                    Vs_config['external_ids:ovn-encap-ip']]
+        ensure    => true,
+        name      => $::ovn::params::ovn_controller_service_name,
+        hasstatus => $::ovn::params::ovn_controller_service_status,
+        pattern   => $::ovn::params::ovn_controller_service_pattern,
+        enable    => true,
+        require   => [Vs_config['external_ids:ovn-remote'],
+                      Vs_config['external_ids:ovn-encap-type'],
+                      Vs_config['external_ids:ovn-encap-ip']]
     }
 
     package { $::ovn::params::ovn_controller_package_name:
