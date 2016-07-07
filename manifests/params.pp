@@ -4,6 +4,7 @@
 # This class defines the variable like
 #
 class ovn::params {
+  include ::openstacklib::defaults
     case $::osfamily {
       'Redhat': {
           $ovn_northd_package_name        = 'openvswitch-ovn-central'
