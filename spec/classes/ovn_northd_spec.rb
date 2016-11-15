@@ -2,6 +2,19 @@ require 'spec_helper'
 
 describe 'ovn::northd' do
 
+  shared_examples_for 'systemd env' do
+    it 'creates systemd conf' do
+      is_expected.to contain_file('/etc/sysconfig/ovn-northd').with(
+        :ensure  => 'file',
+        :mode    => '0644',
+        :owner   => 'root',
+        :group   => 'root',
+        :content => "OVN_NORTHD_OPTS=--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes",
+        :before  => 'Service[northd]',
+      )
+    end
+  end
+
   shared_examples_for 'ovn northd' do
     it 'includes params' do
       is_expected.to contain_class('ovn::params')
@@ -56,6 +69,7 @@ describe 'ovn::northd' do
           }
         end
         it_behaves_like 'ovn northd'
+        it_behaves_like 'systemd env'
       end
     end
   end
