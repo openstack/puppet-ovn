@@ -1,0 +1,5 @@
+---
+features:
+  - Setup up the bridge for provider network mapping and to add appropriate interfaces to the bridge.
+issues:
+  - Documentation for ovn_remote has been update to reflect what values are expected to be passed into it.
