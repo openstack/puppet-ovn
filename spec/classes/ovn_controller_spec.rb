@@ -3,9 +3,11 @@ require 'spec_helper'
 describe 'ovn::controller' do
 
   let :params do
-    { :ovn_remote     => 'tcp:x.x.x.x:5000',
-      :ovn_encap_type => 'geneve',
-      :ovn_encap_ip   => '1.2.3.4'
+    { :ovn_remote                => 'tcp:x.x.x.x:5000',
+      :ovn_encap_type            => 'geneve',
+      :ovn_encap_ip              => '1.2.3.4',
+      :ovn_bridge_mappings       => ['physnet-1:br-1'],
+      :bridge_interface_mappings => ['br-1:eth1']
     }
   end
 
@@ -38,20 +40,34 @@ describe 'ovn::controller' do
 
     it 'configures ovsdb' do
       is_expected.to contain_vs_config('external_ids:ovn-remote').with(
-        :ensure  => 'present',
         :value   => params[:ovn_remote],
-        :require => 'Service[openvswitch]'
       )
 
       is_expected.to contain_vs_config('external_ids:ovn-encap-type').with(
-        :ensure  => 'present',
         :value   => params[:ovn_encap_type],
-        :require => 'Service[openvswitch]'
       )
 
       is_expected.to contain_vs_config('external_ids:ovn-encap-ip').with(
-        :ensure  => 'present',
         :value   => params[:ovn_encap_ip],
+      )
+
+      is_expected.to contain_vs_config('external_ids:hostname').with(
+        :value   => 'foo.example.com',
+      )
+    end
+
+    it 'configures bridge mappings' do
+      is_expected.to contain_vs_config('external_ids:ovn-bridge-mappings').with(
+        :value    => 'physnet-1:br-1',
+      )
+
+      is_expected.to contain_ovn__controller__bridge(params[:ovn_bridge_mappings].join(',')).with(
+        :before  => 'Service[controller]',
+        :require => 'Service[openvswitch]'
+      )
+
+      is_expected.to contain_ovn__controller__port(params[:bridge_interface_mappings].join(',')).with(
+        :before  => 'Service[controller]',
         :require => 'Service[openvswitch]'
       )
     end
