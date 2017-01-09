@@ -7,7 +7,8 @@ describe 'ovn::controller' do
       :ovn_encap_type            => 'geneve',
       :ovn_encap_ip              => '1.2.3.4',
       :ovn_bridge_mappings       => ['physnet-1:br-1'],
-      :bridge_interface_mappings => ['br-1:eth1']
+      :bridge_interface_mappings => ['br-1:eth1'],
+      :hostname                  => 'server1.example.com'
     }
   end
 
@@ -52,7 +53,7 @@ describe 'ovn::controller' do
       )
 
       is_expected.to contain_vs_config('external_ids:hostname').with(
-        :value   => 'foo.example.com',
+        :value   => 'server1.example.com',
       )
     end
 
