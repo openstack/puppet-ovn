@@ -1,0 +1,3 @@
+---
+issues:
+  - The external id was hard coded to $::fqdn, it is now a parameter that defaults to $::fqdn
