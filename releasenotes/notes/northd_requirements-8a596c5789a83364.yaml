@@ -1,0 +1,3 @@
+---
+issues:
+  - The ovn northd class requires that openvswitch be installed and the service running to operate.
