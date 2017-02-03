@@ -1,6 +1,6 @@
 {
   "name": "openstack-ovn",
-  "version": "10.2.0",
+  "version": "10.3.0",
   "author": "OVN and OpenStack contributors",
   "summary": "Modules to setup ovn-northd and ovn-controller",
   "license": "Apache-2.0",
