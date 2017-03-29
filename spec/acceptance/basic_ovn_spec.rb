@@ -7,18 +7,6 @@ describe 'basic ovn deployment' do
     include ::openstack_integration
     include ::openstack_integration::repos
 
-    # TODO: use rdo-ovn repository once available
-    if $::osfamily == 'RedHat' {
-      yumrepo { 'dpdk-snapshot':
-        enabled    => '1',
-        baseurl    => 'https://copr-be.cloud.fedoraproject.org/results/pmatilai/dpdk-snapshot/epel-7-x86_64/',
-        descr      => 'Repository for dpdk-snapshot',
-        mirrorlist => 'absent',
-        gpgcheck   => '1',
-        gpgkey     => 'https://copr-be.cloud.fedoraproject.org/results/pmatilai/dpdk-snapshot/pubkey.gpg',
-        notify     => Exec[yum_refresh],
-      }
-    }
     include ::ovn::northd
     class { '::ovn::controller':
       ovn_remote   => 'tcp:127.0.0.1:6642',
