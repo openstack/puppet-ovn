@@ -29,6 +29,10 @@
 #   (optional) The hostname to use with the external id
 #   Defaults to $::fqdn
 #
+# [*ovn_bridge*]
+#   (optional) Name of the integration bridge.
+#   Defaults to 'br-int'
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -36,6 +40,7 @@ class ovn::controller(
   $ovn_bridge_mappings       = [],
   $bridge_interface_mappings = [],
   $hostname                  = $::fqdn,
+  $ovn_bridge                = 'br-int',
 ) {
   include ::ovn::params
   include ::vswitch::ovs
@@ -64,6 +69,7 @@ class ovn::controller(
     'external_ids:ovn-encap-type' => { 'value' => $ovn_encap_type },
     'external_ids:ovn-encap-ip'   => { 'value' => $ovn_encap_ip },
     'external_ids:hostname'       => { 'value' => $hostname },
+    'external_ids:ovn-bridge'     => { 'value' => $ovn_bridge },
   }
 
   if !empty($ovn_bridge_mappings) {
