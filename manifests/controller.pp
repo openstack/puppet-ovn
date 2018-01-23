@@ -33,6 +33,11 @@
 #   (optional) Name of the integration bridge.
 #   Defaults to 'br-int'
 #
+# [*enable_hw_offload*]
+#   (optional) Configure OVS to use
+#   Hardware Offload. This feature is
+#   supported from ovs 2.8.0.
+#   Defaults to False.
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -41,6 +46,7 @@ class ovn::controller(
   $bridge_interface_mappings = [],
   $hostname                  = $::fqdn,
   $ovn_bridge                = 'br-int',
+  $enable_hw_offload         = false,
 ) {
   include ::ovn::params
   include ::vswitch::ovs
@@ -89,6 +95,12 @@ class ovn::controller(
     $bridge_items = {}
   }
 
-  create_resources('vs_config', merge($config_items, $bridge_items))
+  if $enable_hw_offload {
+    $hw_offload = { 'other_config:hw-offload' => { 'value' => bool2str($enable_hw_offload) } }
+  }else {
+    $hw_offload = {}
+  }
+
+  create_resources('vs_config', merge($config_items, $bridge_items, $hw_offload))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 }

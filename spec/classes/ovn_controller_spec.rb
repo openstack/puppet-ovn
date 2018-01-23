@@ -9,7 +9,8 @@ describe 'ovn::controller' do
       :ovn_bridge_mappings       => ['physnet-1:br-1'],
       :ovn_bridge                => 'br-int',
       :bridge_interface_mappings => ['br-1:eth1'],
-      :hostname                  => 'server1.example.com'
+      :hostname                  => 'server1.example.com',
+      :enable_hw_offload         => false
     }
   end
 
