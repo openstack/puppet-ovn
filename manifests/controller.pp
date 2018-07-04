@@ -38,6 +38,11 @@
 #   Hardware Offload. This feature is
 #   supported from ovs 2.8.0.
 #   Defaults to False.
+#
+# [*mac_table_size*]
+#  Set the mac table size for the provider bridges if defined in ovn_bridge_mappings
+#  Defaults to 50000
+
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -47,6 +52,7 @@ class ovn::controller(
   $hostname                  = $::fqdn,
   $ovn_bridge                = 'br-int',
   $enable_hw_offload         = false,
+  $mac_table_size            = 50000,
 ) {
   include ::ovn::params
   include ::vswitch::ovs
@@ -103,4 +109,29 @@ class ovn::controller(
 
   create_resources('vs_config', merge($config_items, $bridge_items, $hw_offload))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
+
+  if !empty($ovn_bridge_mappings) {
+    # For each provider bridge, set the mac table size.
+    $ovn_bridge_mappings.each |String $mappings| {
+      $mapping = split($mappings, ':')
+      $br = $mapping[1]
+      if !empty($br) {
+        # TODO(numans): Right now puppet-vswitch's vs_bridge doesn't support
+        # setting the column 'other-config' for the Bridge table.
+        # Switch to using vs_bridge once the support is available.
+        exec { $br:
+          command => "ovs-vsctl --timeout=5 set Bridge ${br} other-config:mac-table-size=${mac_table_size}",
+          unless  => "ovs-vsctl get bridge ${br} other-config:mac-table-size | grep -q -w ${mac_table_size}",
+          path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+          require => Service['openvswitch']
+        }
+      }
+    }
+  } else {
+    # ovn-bridge-mappings is not defined. Clear the existing value if configured.
+    vs_config { 'external_ids:ovn-bridge-mappings':
+      ensure  => absent,
+      require => Service['openvswitch']
+    }
+  }
 }
