@@ -48,5 +48,5 @@
     ],
     "source": "git://github.com/openstack/puppet-ovn.git",
     "summary": "Modules to setup ovn-northd and ovn-controller",
-    "version": "13.1.0"
+    "version": "13.2.0"
 }
