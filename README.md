@@ -57,3 +57,6 @@ For more information on writing and running beaker-rspec tests visit the documen
 
 Release notes for the project can be found at:
   https://docs.openstack.org/releasenotes/puppet-ovn/
+
+The project source code repository is located at:
+   https://git.openstack.org/cgit/openstack/puppet-ovn/
