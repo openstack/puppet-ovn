@@ -39,10 +39,6 @@
     "project_page": "https://launchpad.net/puppet-ovn",
     "requirements": [
         {
-            "name": "pe",
-            "version_requirement": "4.x"
-        },
-        {
             "name": "puppet",
             "version_requirement": "4.x"
         }
