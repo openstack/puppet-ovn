@@ -123,7 +123,7 @@ class ovn::controller(
           command => "ovs-vsctl --timeout=5 set Bridge ${br} other-config:mac-table-size=${mac_table_size}",
           unless  => "ovs-vsctl get bridge ${br} other-config:mac-table-size | grep -q -w ${mac_table_size}",
           path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-          require => Service['openvswitch']
+          require => [ Service['openvswitch'], Vs_bridge[$br] ],
         }
       }
     }
