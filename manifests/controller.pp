@@ -54,12 +54,13 @@ class ovn::controller(
   $enable_hw_offload         = false,
   $mac_table_size            = 50000,
 ) {
+
   include ::ovn::params
   include ::vswitch::ovs
   include ::stdlib
 
-  validate_string($ovn_remote)
-  validate_string($ovn_encap_ip)
+  validate_legacy(String, 'validate_string', $ovn_remote)
+  validate_legacy(String, 'validate_string', $ovn_encap_ip)
 
   service { 'controller':
     ensure    => true,
