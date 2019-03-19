@@ -42,7 +42,15 @@
 # [*mac_table_size*]
 #  Set the mac table size for the provider bridges if defined in ovn_bridge_mappings
 #  Defaults to 50000
-
+#
+# [*datapath_type*]
+#   (optional) Datapath type for ovs bridges
+#   Defaults to $::os_service_default
+#
+# [*enable_dpdk*]
+#   (optional) Enable or not DPDK with OVS
+#   Defaults to false.
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -53,10 +61,22 @@ class ovn::controller(
   $ovn_bridge                = 'br-int',
   $enable_hw_offload         = false,
   $mac_table_size            = 50000,
+  $datapath_type             = $::os_service_default,
+  $enable_dpdk               = false,
 ) {
 
   include ::ovn::params
-  include ::vswitch::ovs
+
+  if $enable_dpdk and is_service_default($datapath_type) {
+    fail('Datapath type must be set when DPDK is enabled')
+  }
+
+  if $enable_dpdk {
+    require ::vswitch::dpdk
+  } else {
+    require ::vswitch::ovs
+  }
+
   include ::stdlib
 
   validate_legacy(String, 'validate_string', $ovn_remote)
@@ -108,7 +128,13 @@ class ovn::controller(
     $hw_offload = {}
   }
 
-  create_resources('vs_config', merge($config_items, $bridge_items, $hw_offload))
+  if ! is_service_default($datapath_type) {
+    $datapath_config = { 'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type } }
+  } else {
+    $datapath_config = {}
+  }
+
+  create_resources('vs_config', merge($config_items, $bridge_items, $hw_offload, $datapath_config))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 
   if !empty($ovn_bridge_mappings) {
@@ -124,6 +150,7 @@ class ovn::controller(
           command => "ovs-vsctl --timeout=5 set Bridge ${br} other-config:mac-table-size=${mac_table_size}",
           unless  => "ovs-vsctl get bridge ${br} other-config:mac-table-size | grep -q -w ${mac_table_size}",
           path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+          onlyif  => "ovs-vsctl br-exists ${br}",
           require => [ Service['openvswitch'], Vs_bridge[$br] ],
         }
       }
