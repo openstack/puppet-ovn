@@ -59,7 +59,7 @@ Release notes for the project can be found at:
   https://docs.openstack.org/releasenotes/puppet-ovn/
 
 The project source code repository is located at:
-   https://git.openstack.org/cgit/openstack/puppet-ovn/
+   https://opendev.org/openstack/puppet-ovn/
 
 Developer documentation for the entire puppet-openstack project can be found at:
   https://docs.openstack.org/puppet-openstack-guide/latest/
