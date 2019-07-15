@@ -42,6 +42,11 @@
 # [*mac_table_size*]
 #  Set the mac table size for the provider bridges if defined in ovn_bridge_mappings
 #  Defaults to 50000
+#
+# [*ovn_remote_probe_interval*]
+#  (optional) Set probe interval, based on user configuration, value is in ms
+#  Defaults to 60000
+#
 
 class ovn::controller(
   $ovn_remote,
@@ -53,6 +58,7 @@ class ovn::controller(
   $ovn_bridge                = 'br-int',
   $enable_hw_offload         = false,
   $mac_table_size            = 50000,
+  $ovn_remote_probe_interval = 60000,
 ) {
   include ::ovn::params
   include ::vswitch::ovs
@@ -77,11 +83,12 @@ class ovn::controller(
   }
 
   $config_items = {
-    'external_ids:ovn-remote'     => { 'value' => $ovn_remote },
-    'external_ids:ovn-encap-type' => { 'value' => $ovn_encap_type },
-    'external_ids:ovn-encap-ip'   => { 'value' => $ovn_encap_ip },
-    'external_ids:hostname'       => { 'value' => $hostname },
-    'external_ids:ovn-bridge'     => { 'value' => $ovn_bridge },
+    'external_ids:ovn-remote'                => { 'value' => $ovn_remote },
+    'external_ids:ovn-encap-type'            => { 'value' => $ovn_encap_type },
+    'external_ids:ovn-encap-ip'              => { 'value' => $ovn_encap_ip },
+    'external_ids:hostname'                  => { 'value' => $hostname },
+    'external_ids:ovn-bridge'                => { 'value' => $ovn_bridge },
+    'external_ids:ovn-remote-probe-interval' => { 'value' => "${ovn_remote_probe_interval}" },
   }
 
   if !empty($ovn_bridge_mappings) {
