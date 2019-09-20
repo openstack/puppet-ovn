@@ -47,18 +47,27 @@
 #  (optional) Set probe interval, based on user configuration, value is in ms
 #  Defaults to 60000
 #
-
+# [*ovn_openflow_probe_interval*]
+#  (optional) The inactivity probe interval of the OpenFlow
+#  connection to the OpenvSwitch integration bridge, in
+#  seconds. If the value is zero, it disables the connection keepalive feature.
+#  If the value is nonzero, then it will be forced to a value of at least 5s.
+#  Defaults to 60
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
-  $ovn_encap_type            = 'geneve',
-  $ovn_bridge_mappings       = [],
-  $bridge_interface_mappings = [],
-  $hostname                  = $::fqdn,
-  $ovn_bridge                = 'br-int',
-  $enable_hw_offload         = false,
-  $mac_table_size            = 50000,
-  $ovn_remote_probe_interval = 60000,
+  $ovn_encap_type              = 'geneve',
+  $ovn_bridge_mappings         = [],
+  $bridge_interface_mappings   = [],
+  $hostname                    = $::fqdn,
+  $ovn_bridge                  = 'br-int',
+  $enable_hw_offload           = false,
+  $mac_table_size              = 50000,
+  $datapath_type               = $::os_service_default,
+  $enable_dpdk                 = false,
+  $ovn_remote_probe_interval   = 60000,
+  $ovn_openflow_probe_interval = 60,
 ) {
   include ::ovn::params
   include ::vswitch::ovs
@@ -83,12 +92,13 @@ class ovn::controller(
   }
 
   $config_items = {
-    'external_ids:ovn-remote'                => { 'value' => $ovn_remote },
-    'external_ids:ovn-encap-type'            => { 'value' => $ovn_encap_type },
-    'external_ids:ovn-encap-ip'              => { 'value' => $ovn_encap_ip },
-    'external_ids:hostname'                  => { 'value' => $hostname },
-    'external_ids:ovn-bridge'                => { 'value' => $ovn_bridge },
-    'external_ids:ovn-remote-probe-interval' => { 'value' => "${ovn_remote_probe_interval}" },
+    'external_ids:ovn-remote'                   => { 'value' => $ovn_remote },
+    'external_ids:ovn-encap-type'               => { 'value' => $ovn_encap_type },
+    'external_ids:ovn-encap-ip'                 => { 'value' => $ovn_encap_ip },
+    'external_ids:hostname'                     => { 'value' => $hostname },
+    'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
+    'external_ids:ovn-remote-probe-interval'    => { 'value' => "${ovn_remote_probe_interval}" },
+    'external_ids:ovn-openflow-probe-interval'  => { 'value' => "${ovn_openflow_probe_interval}" },
   }
 
   if !empty($ovn_bridge_mappings) {
