@@ -3,16 +3,17 @@ require 'spec_helper'
 describe 'ovn::controller' do
 
   let :params do
-    { :ovn_remote                => 'tcp:x.x.x.x:5000',
-      :ovn_encap_type            => 'geneve',
-      :ovn_encap_ip              => '1.2.3.4',
-      :ovn_bridge_mappings       => ['physnet-1:br-1'],
-      :ovn_bridge                => 'br-int',
-      :bridge_interface_mappings => ['br-1:eth1'],
-      :hostname                  => 'server1.example.com',
-      :enable_hw_offload         => false,
-      :mac_table_size            => 20000,
-      :ovn_remote_probe_interval => 30000,
+    { :ovn_remote                  => 'tcp:x.x.x.x:5000',
+      :ovn_encap_type              => 'geneve',
+      :ovn_encap_ip                => '1.2.3.4',
+      :ovn_bridge_mappings         => ['physnet-1:br-1'],
+      :ovn_bridge                  => 'br-int',
+      :bridge_interface_mappings   => ['br-1:eth1'],
+      :hostname                    => 'server1.example.com',
+      :enable_hw_offload           => false,
+      :mac_table_size              => 20000,
+      :ovn_remote_probe_interval   => 30000,
+      :ovn_openflow_probe_interval => 8,
     }
   end
 
@@ -66,6 +67,10 @@ describe 'ovn::controller' do
 
       is_expected.to contain_vs_config('external_ids:ovn-remote-probe-interval').with(
         :value   => params[:ovn_remote_probe_interval],
+      )
+
+      is_expected.to contain_vs_config('external_ids:ovn-openflow-probe-interval').with(
+        :value   => params[:ovn_openflow_probe_interval],
       )
     end
 
