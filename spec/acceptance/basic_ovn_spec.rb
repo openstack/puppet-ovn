@@ -4,11 +4,11 @@ describe 'basic ovn deployment' do
 
   context 'default parameters' do
     pp= <<-EOS
-    include ::openstack_integration
-    include ::openstack_integration::repos
+    include openstack_integration
+    include openstack_integration::repos
 
-    include ::ovn::northd
-    class { '::ovn::controller':
+    include ovn::northd
+    class { 'ovn::controller':
       ovn_remote   => 'tcp:127.0.0.1:6642',
       ovn_encap_ip => '127.0.0.1',
     }

@@ -78,7 +78,7 @@ class ovn::controller(
   $ovn_openflow_probe_interval = 60,
 ) {
 
-  include ::ovn::params
+  include ovn::params
 
   if $enable_dpdk and is_service_default($datapath_type) {
     fail('Datapath type must be set when DPDK is enabled')
@@ -90,7 +90,7 @@ class ovn::controller(
     require ::vswitch::ovs
   }
 
-  include ::stdlib
+  include stdlib
 
   validate_legacy(String, 'validate_string', $ovn_remote)
   validate_legacy(String, 'validate_string', $ovn_encap_ip)

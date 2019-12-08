@@ -8,8 +8,8 @@
 #   Defaults to '0.0.0.0'
 #
 class ovn::northd($dbs_listen_ip = '0.0.0.0') {
-  include ::ovn::params
-  include ::vswitch::ovs
+  include ovn::params
+  include vswitch::ovs
 
   if $::osfamily == 'RedHat' {
     augeas { 'sysconfig-ovn-northd':
