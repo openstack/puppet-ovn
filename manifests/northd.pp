@@ -11,13 +11,25 @@ class ovn::northd($dbs_listen_ip = '0.0.0.0') {
   include ovn::params
   include vswitch::ovs
 
-  if $::osfamily == 'RedHat' {
-    augeas { 'sysconfig-ovn-northd':
-      context =>  '/files/etc/sysconfig/ovn-northd',
-      changes =>  "set OVN_NORTHD_OPTS '\"--db-nb-addr=${dbs_listen_ip} --db-sb-addr=${dbs_listen_ip} \
---db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
-      before  =>  Service['northd'],
+  case $::osfamily {
+    'RedHat': {
+      $ovn_northd_context = '/files/etc/sysconfig/ovn-northd'
+      $ovn_northd_option_name = 'OVN_NORTHD_OPTS'
     }
+    'Debian': {
+      $ovn_northd_context = '/files/etc/default/ovn-central'
+      $ovn_northd_option_name = 'OVN_CTL_OPTS'
+    }
+    default: {
+      fail("Unsupported osfamily: ${::osfamily} operatingsystem")
+    }
+  }
+
+  augeas { 'config-ovn-northd':
+    context => $ovn_northd_context,
+    changes => "set ${ovn_northd_option_name} '\"--db-nb-addr=${dbs_listen_ip} --db-sb-addr=${dbs_listen_ip} \
+--db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
+    before  => Service['northd'],
   }
 
   service { 'northd':
