@@ -4,14 +4,11 @@ describe 'ovn::northd' do
 
   shared_examples_for 'systemd env' do
     it 'creates systemd conf' do
-      is_expected.to contain_file('/etc/sysconfig/ovn-northd').with(
-        :ensure  => 'file',
-        :mode    => '0644',
-        :owner   => 'root',
-        :group   => 'root',
-        :content => "OVN_NORTHD_OPTS=--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes",
-        :before  => 'Service[northd]',
-      )
+      is_expected.to contain_augeas('config-ovn-northd').with({
+        :context => platform_params[:ovn_northd_context],
+        :changes => "set " + platform_params[:ovn_northd_option_name] +
+                    " '\"--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes  \"'",
+      })
     end
   end
 
@@ -55,17 +52,22 @@ describe 'ovn::northd' do
             :ovn_northd_package_name    => 'ovn-central',
             :ovn_northd_service_name    => 'ovn-central',
             :ovn_northd_service_status  => false,
-            :ovn_northd_service_pattern => 'ovn-northd'
+            :ovn_northd_service_pattern => 'ovn-northd',
+            :ovn_northd_context         => '/files/etc/default/ovn-central',
+            :ovn_northd_option_name     => 'OVN_CTL_OPTS'
           }
         end
         it_behaves_like 'ovn northd'
-      when 'Redhat'
+        it_behaves_like 'systemd env'
+      when 'RedHat'
         let(:platform_params) do
           {
             :ovn_northd_package_name    => 'openvswitch-ovn-central',
             :ovn_northd_service_name    => 'ovn-northd',
             :ovn_northd_service_status  => true,
-            :ovn_northd_service_pattern => 'undef'
+            :ovn_northd_service_pattern => nil,
+            :ovn_northd_context         => '/files/etc/sysconfig/ovn-northd',
+            :ovn_northd_option_name     => 'OVN_NORTHD_OPTS'
           }
         end
         it_behaves_like 'ovn northd'

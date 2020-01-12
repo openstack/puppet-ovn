@@ -111,13 +111,13 @@ describe 'ovn::controller' do
           }
         end
         it_behaves_like 'ovn controller'
-      when 'Redhat'
+      when 'RedHat'
         let :platform_params do
           {
             :ovn_controller_package_name    => 'openvswitch-ovn-host',
             :ovn_controller_service_name    => 'ovn-controller',
             :ovn_controller_service_status  => true,
-            :ovn_controller_service_pattern => 'undef'
+            :ovn_controller_service_pattern => nil
           }
         end
         it_behaves_like 'ovn controller'

@@ -6,7 +6,7 @@
 class ovn::params {
   include openstacklib::defaults
     case $::osfamily {
-      'Redhat': {
+      'RedHat': {
           $ovn_northd_package_name        = 'openvswitch-ovn-central'
           $ovn_controller_package_name    = 'openvswitch-ovn-host'
           $ovn_northd_service_name        = 'ovn-northd'
