@@ -7,11 +7,11 @@
         },
         {
             "name": "openstack/vswitch",
-            "version_requirement": ">=11.0.0 <12.0.0"
+            "version_requirement": ">=10.4.0 <11.0.0"
         },
         {
             "name": "openstack/openstacklib",
-            "version_requirement": ">=15.0.0 <16.0.0"
+            "version_requirement": ">=14.4.0 <15.0.0"
         }
     ],
     "issues_url": "https://bugs.launchpad.net/puppet-ovn",
