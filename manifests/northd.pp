@@ -23,20 +23,6 @@ class ovn::northd(
   include ovn::params
   include vswitch::ovs
 
-  case $::osfamily {
-    'RedHat': {
-      $ovn_northd_context = '/files/etc/sysconfig/ovn-northd'
-      $ovn_northd_option_name = 'OVN_NORTHD_OPTS'
-    }
-    'Debian': {
-      $ovn_northd_context = '/files/etc/default/ovn-central'
-      $ovn_northd_option_name = 'OVN_CTL_OPTS'
-    }
-    default: {
-      fail("Unsupported osfamily: ${::osfamily} operatingsystem")
-    }
-  }
-
   $ovn_northd_opts_addr = "--db-nb-addr=${dbs_listen_ip} --db-sb-addr=${dbs_listen_ip} \
 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes"
 
@@ -56,8 +42,8 @@ class ovn::northd(
                           ' ')
 
   augeas { 'config-ovn-northd':
-    context => $ovn_northd_context,
-    changes => "set ${ovn_northd_option_name} '\"${ovn_northd_opts}\"'",
+    context => $::ovn::params::ovn_northd_context,
+    changes => "set ${$::ovn::params::ovn_northd_option_name} '\"${ovn_northd_opts}\"'",
     before  => Service['northd'],
   }
 

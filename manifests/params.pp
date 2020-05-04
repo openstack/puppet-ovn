@@ -12,6 +12,8 @@ class ovn::params {
           $ovn_northd_service_name        = 'ovn-northd'
           $ovn_northd_service_status      = true
           $ovn_northd_service_pattern     = undef
+          $ovn_northd_context             = '/files/etc/sysconfig/ovn-northd'
+          $ovn_northd_option_name         = 'OVN_NORTHD_OPTS'
           $ovn_controller_service_name    = 'ovn-controller'
           $ovn_controller_service_status  = true
           $ovn_controller_service_pattern = undef
@@ -22,6 +24,8 @@ class ovn::params {
           $ovn_northd_service_name        = 'ovn-central'
           $ovn_northd_service_status      = false # status broken in UCA
           $ovn_northd_service_pattern     = 'ovn-northd'
+          $ovn_northd_context             = '/files/etc/default/ovn-central'
+          $ovn_northd_option_name         = 'OVN_CTL_OPTS'
           $ovn_controller_service_name    = 'ovn-host'
           $ovn_controller_service_status  = false # status broken in UCA
           $ovn_controller_service_pattern = 'ovn-controller'
