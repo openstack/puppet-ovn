@@ -14,6 +14,7 @@ describe 'ovn::controller' do
       :mac_table_size              => 20000,
       :ovn_remote_probe_interval   => 30000,
       :ovn_openflow_probe_interval => 8,
+      :ovn_transport_zones         => ['tz1'],
     }
   end
 
@@ -72,6 +73,11 @@ describe 'ovn::controller' do
       is_expected.to contain_vs_config('external_ids:ovn-openflow-probe-interval').with(
         :value   => params[:ovn_openflow_probe_interval],
       )
+
+      is_expected.to contain_vs_config('external_ids:ovn-transport-zones').with(
+        :value   => params[:ovn_transport_zones],
+      )
+
     end
 
     it 'configures bridge mappings' do
