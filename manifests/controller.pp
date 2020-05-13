@@ -62,6 +62,10 @@
 #  If the value is nonzero, then it will be forced to a value of at least 5s.
 #  Defaults to 60
 #
+# [*ovn_transport_zones*]
+#  (optional) List of the transport zones to which the chassis belongs to.
+#  Defaults to empty list
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -76,6 +80,7 @@ class ovn::controller(
   $enable_dpdk                 = false,
   $ovn_remote_probe_interval   = 60000,
   $ovn_openflow_probe_interval = 60,
+  $ovn_transport_zones         = [],
 ) {
 
   include ovn::params
@@ -137,6 +142,14 @@ class ovn::controller(
     $bridge_items = {}
   }
 
+  if !empty($ovn_transport_zones) {
+    $tz_items = {
+      'external_ids:ovn-transport-zones' => { 'value' => join(any2array($ovn_transport_zones), ',') }
+    }
+  } else {
+    $tz_items = {}
+  }
+
   if $enable_hw_offload {
     $hw_offload = { 'other_config:hw-offload' => { 'value' => bool2str($enable_hw_offload) } }
   }else {
@@ -149,7 +162,7 @@ class ovn::controller(
     $datapath_config = {}
   }
 
-  create_resources('vs_config', merge($config_items, $bridge_items, $hw_offload, $datapath_config))
+  create_resources('vs_config', merge($config_items, $bridge_items, $tz_items, $hw_offload, $datapath_config))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 
   if !empty($ovn_bridge_mappings) {
@@ -173,6 +186,14 @@ class ovn::controller(
   } else {
     # ovn-bridge-mappings is not defined. Clear the existing value if configured.
     vs_config { 'external_ids:ovn-bridge-mappings':
+      ensure  => absent,
+      require => Service['openvswitch']
+    }
+  }
+
+  if empty($ovn_transport_zones) {
+    # ovn-transport-zones is not defined. Clear the existing value if configured.
+    vs_config { 'external_ids:ovn-transport-zones':
       ensure  => absent,
       require => Service['openvswitch']
     }
