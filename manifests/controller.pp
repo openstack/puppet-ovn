@@ -90,9 +90,9 @@ class ovn::controller(
   }
 
   if $enable_dpdk {
-    require ::vswitch::dpdk
+    require vswitch::dpdk
   } else {
-    require ::vswitch::ovs
+    require vswitch::ovs
   }
 
   include stdlib
