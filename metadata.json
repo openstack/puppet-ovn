@@ -7,11 +7,11 @@
         },
         {
             "name": "openstack/vswitch",
-            "version_requirement": ">=13.1.0 <14.0.0"
+            "version_requirement": ">=13.2.0 <14.0.0"
         },
         {
             "name": "openstack/openstacklib",
-            "version_requirement": ">=17.1.0 <18.0.0"
+            "version_requirement": ">=17.2.0 <18.0.0"
         }
     ],
     "issues_url": "https://bugs.launchpad.net/puppet-ovn",
@@ -58,5 +58,5 @@
     ],
     "source": "git://github.com/openstack/puppet-ovn.git",
     "summary": "Modules to setup ovn-northd and ovn-controller",
-    "version": "17.1.0"
+    "version": "17.2.0"
 }
