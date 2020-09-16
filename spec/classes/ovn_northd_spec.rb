@@ -7,7 +7,7 @@ describe 'ovn::northd' do
       is_expected.to contain_augeas('config-ovn-northd').with({
         :context => platform_params[:ovn_northd_context],
         :changes => "set " + platform_params[:ovn_northd_option_name] +
-                    " '\"--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes  \"'",
+                    " '\"--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
       })
     end
   end

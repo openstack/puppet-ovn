@@ -29,16 +29,20 @@ class ovn::northd(
   if $dbs_cluster_local_addr {
     $ovn_northd_opts_cluster_local_addr = "--db-nb-cluster-local-addr=${dbs_cluster_local_addr} \
 --db-sb-cluster-local-addr=${dbs_cluster_local_addr}"
+  } else {
+    $ovn_northd_opts_cluster_local_addr = undef
   }
 
   if $dbs_cluster_remote_addr {
     $ovn_northd_opts_cluster_remote_addr = "--db-nb-cluster-remote-addr=${dbs_cluster_remote_addr} \
 --db-sb-cluster-remote-addr=${dbs_cluster_remote_addr}"
+  } else {
+    $ovn_northd_opts_cluster_remote_addr = undef
   }
 
-  $ovn_northd_opts = join([$ovn_northd_opts_addr,
+  $ovn_northd_opts = join(delete_undef_values([$ovn_northd_opts_addr,
                           $ovn_northd_opts_cluster_local_addr,
-                          $ovn_northd_opts_cluster_remote_addr],
+                          $ovn_northd_opts_cluster_remote_addr]),
                           ' ')
 
   augeas { 'config-ovn-northd':
