@@ -20,9 +20,9 @@ describe 'basic ovn deployment' do
       apply_manifest(pp, :catch_changes => true)
     end
 
-    describe 'test openvswitch-ovn CLI' do
-      it 'list virtual ports' do
-        expect(shell('ovn-nbctl show').exit_code).to be_zero
+    it 'should show successfully' do
+      command('ovn-nbctl show') do |r|
+        expect(r.exit_code).to eq 0
       end
     end
   end
