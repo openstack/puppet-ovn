@@ -56,7 +56,7 @@
             "version_requirement": ">= 6.0.0 < 7.0.0"
         }
     ],
-    "source": "git://github.com/openstack/puppet-ovn.git",
+    "source": "https://opendev.org/openstack/puppet-ovn.git",
     "summary": "Modules to setup ovn-northd and ovn-controller",
     "version": "18.0.0"
 }
