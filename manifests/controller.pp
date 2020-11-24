@@ -66,6 +66,13 @@
 #  (optional) List of the transport zones to which the chassis belongs to.
 #  Defaults to empty list
 #
+# [*enable_ovn_match_northd*]
+#  (optional) When set to true, enable update of ovn_controller after
+#  ovn-northd by blocking new message from the ovn-northd to be
+#  accepted by the ovn_controller until they have the same version.
+#  This need >= ovn2.13-20.09.0-17.
+#  Default to false (keep the original behavior)
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -81,6 +88,7 @@ class ovn::controller(
   $ovn_remote_probe_interval   = 60000,
   $ovn_openflow_probe_interval = 60,
   $ovn_transport_zones         = [],
+  $enable_ovn_match_northd     = false,
 ) {
 
   include ovn::params
@@ -162,7 +170,10 @@ class ovn::controller(
     $datapath_config = {}
   }
 
-  create_resources('vs_config', merge($config_items, $bridge_items, $tz_items, $hw_offload, $datapath_config))
+  $ovn_match_northd = {
+    'external_ids:ovn-match-northd-version' => { 'value' => bool2str($enable_ovn_match_northd) }
+  }
+  create_resources('vs_config', merge($config_items, $bridge_items, $tz_items, $hw_offload, $datapath_config, $ovn_match_northd))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 
   if !empty($ovn_bridge_mappings) {

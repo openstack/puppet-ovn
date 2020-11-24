@@ -15,6 +15,7 @@ describe 'ovn::controller' do
       :ovn_remote_probe_interval   => 30000,
       :ovn_openflow_probe_interval => 8,
       :ovn_transport_zones         => ['tz1'],
+      :enable_ovn_match_northd     => false,
     }
   end
 
@@ -76,6 +77,10 @@ describe 'ovn::controller' do
 
       is_expected.to contain_vs_config('external_ids:ovn-transport-zones').with(
         :value   => params[:ovn_transport_zones],
+      )
+
+      is_expected.to contain_vs_config('external_ids:ovn-match-northd-version').with(
+        :value   => params[:enable_ovn_match_northd],
       )
 
     end
