@@ -62,6 +62,13 @@
 #  If the value is nonzero, then it will be forced to a value of at least 5s.
 #  Defaults to 60
 #
+# [*enable_ovn_match_northd*]
+#  (optional) When set to true, enable update of ovn_controller after
+#  ovn-northd by blocking new message from the ovn-northd to be
+#  accepted by the ovn_controller until they have the same version.
+#  This need >= ovn2.13-20.09.0-17.
+#  Default to false (keep the original behavior)
+#
 # [*ovn_chassis_mac_map*]
 #  (optional) A list or a hash of key-value pairs that map a chassis specific mac to
 #  a physical network name. An example value mapping two chassis macs to
@@ -96,6 +103,7 @@ class ovn::controller(
   $enable_dpdk                 = false,
   $ovn_remote_probe_interval   = 60000,
   $ovn_openflow_probe_interval = 60,
+  $enable_ovn_match_northd     = false,
   $ovn_chassis_mac_map         = [],
   $ovn_monitor_all             = false,
 ) {
@@ -186,7 +194,10 @@ class ovn::controller(
     $datapath_config = {}
   }
 
-  create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $hw_offload, $datapath_config))
+  $ovn_match_northd = {
+    'external_ids:ovn-match-northd-version' => { 'value' => bool2str($enable_ovn_match_northd) }
+  }
+  create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $hw_offload, $datapath_config, $ovn_match_northd))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 
   if !empty($ovn_bridge_mappings) {

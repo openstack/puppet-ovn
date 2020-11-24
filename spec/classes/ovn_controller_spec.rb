@@ -15,6 +15,7 @@ describe 'ovn::controller' do
       :ovn_remote_probe_interval   => 30000,
       :ovn_openflow_probe_interval => 8,
       :ovn_monitor_all             => true,
+      :enable_ovn_match_northd     => false,
       :ovn_chassis_mac_map         => ['physnet1:aa:bb:cc:dd:ee:ff',
                                        'physnet2:bb:aa:cc:dd:ee:ff']
     }
@@ -78,6 +79,10 @@ describe 'ovn::controller' do
 
       is_expected.to contain_vs_config('external_ids:ovn-monitor-all').with(
         :value   => params[:ovn_monitor_all],
+      )
+
+      is_expected.to contain_vs_config('external_ids:ovn-match-northd-version').with(
+        :value   => params[:enable_ovn_match_northd],
       )
 
       is_expected.to contain_vs_config('external_ids:ovn-chassis-mac-mappings').with(
