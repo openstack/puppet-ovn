@@ -73,6 +73,20 @@
 #  This need >= ovn2.13-20.09.0-17.
 #  Default to false (keep the original behavior)
 #
+# [*ovn_chassis_mac_map*]
+#  (optional) A list or a hash of key-value pairs that map a chassis specific mac to
+#  a physical network name. An example value mapping two chassis macs to
+#  two physical network names would be:
+#  physnet1:aa:bb:cc:dd:ee:ff,physnet2:a1:b2:c3:d4:e5:f6 or
+#  {
+#    physnet1 => aa:bb:cc:dd:ee:ff,
+#    physnet2 => a1:b2:c3:d4:e5:f6
+#  }
+#  These are the macs that ovn-controller will replace a router port
+#  mac with, if packet is going from a distributed router port on
+#  vlan type logical switch.
+#  Defaults to empty list
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -89,6 +103,7 @@ class ovn::controller(
   $ovn_openflow_probe_interval = 60,
   $ovn_transport_zones         = [],
   $enable_ovn_match_northd     = false,
+  $ovn_chassis_mac_map         = [],
 ) {
 
   include ovn::params
@@ -133,6 +148,20 @@ class ovn::controller(
     'external_ids:ovn-openflow-probe-interval'  => { 'value' => "${ovn_openflow_probe_interval}" },
   }
 
+  if !empty($ovn_chassis_mac_map) {
+    if $ovn_chassis_mac_map =~ Hash {
+      $chassis_mac_map = {
+        'external_ids:ovn-chassis-mac-mappings' => { 'value' => join(join_keys_to_values($ovn_chassis_mac_map, ':'), ',') }
+      }
+    } else {
+      $chassis_mac_map = {
+        'external_ids:ovn-chassis-mac-mappings' => { 'value' => join(any2array($ovn_chassis_mac_map), ',') }
+      }
+    }
+  } else {
+    $chassis_mac_map = {}
+  }
+
   if !empty($ovn_bridge_mappings) {
     $bridge_items = {
       'external_ids:ovn-bridge-mappings' => { 'value' => join(any2array($ovn_bridge_mappings), ',') }
@@ -173,7 +202,7 @@ class ovn::controller(
   $ovn_match_northd = {
     'external_ids:ovn-match-northd-version' => { 'value' => bool2str($enable_ovn_match_northd) }
   }
-  create_resources('vs_config', merge($config_items, $bridge_items, $tz_items, $hw_offload, $datapath_config, $ovn_match_northd))
+  create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $tz_items, $hw_offload, $datapath_config, $ovn_match_northd))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 
   if !empty($ovn_bridge_mappings) {
