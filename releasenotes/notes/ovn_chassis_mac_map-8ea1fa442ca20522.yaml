@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The new ``ovn::controller::ovn_chassis_mac_map`` parameter has been added.
+    For distributed vlan in ovn we need to set mac addresses per compute in
+    external_ids:ovn-chassis-mac-mappings

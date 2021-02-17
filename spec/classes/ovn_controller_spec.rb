@@ -15,6 +15,8 @@ describe 'ovn::controller' do
       :ovn_remote_probe_interval   => 30000,
       :ovn_openflow_probe_interval => 8,
       :ovn_transport_zones         => ['tz1'],
+      :ovn_chassis_mac_map         => ['physnet1:aa:bb:cc:dd:ee:ff',
+                                       'physnet2:bb:aa:cc:dd:ee:ff']
     }
   end
 
@@ -78,6 +80,9 @@ describe 'ovn::controller' do
         :value   => params[:ovn_transport_zones],
       )
 
+      is_expected.to contain_vs_config('external_ids:ovn-chassis-mac-mappings').with(
+        :value    => 'physnet1:aa:bb:cc:dd:ee:ff,physnet2:bb:aa:cc:dd:ee:ff',
+      )
     end
 
     it 'configures bridge mappings' do
@@ -94,6 +99,22 @@ describe 'ovn::controller' do
         :before  => 'Service[controller]',
         :require => 'Service[openvswitch]'
       )
+    end
+
+    context 'when ovn_chassis_mac_map is a hash' do
+      before :each do
+        params.merge!({
+          :ovn_chassis_mac_map => {
+            'physnet1' => 'aa:bb:cc:dd:ee:ff',
+            'physnet2' => 'bb:aa:cc:dd:ee:ff' }
+        })
+      end
+
+      it 'configures ovsdb' do
+        is_expected.to contain_vs_config('external_ids:ovn-chassis-mac-mappings').with(
+          :value    => 'physnet1:aa:bb:cc:dd:ee:ff,physnet2:bb:aa:cc:dd:ee:ff',
+        )
+      end
     end
   end
 
