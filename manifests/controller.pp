@@ -33,12 +33,6 @@
 #   (optional) Name of the integration bridge.
 #   Defaults to 'br-int'
 #
-# [*enable_hw_offload*]
-#   (optional) Configure OVS to use
-#   Hardware Offload. This feature is
-#   supported from ovs 2.8.0.
-#   Defaults to False.
-#
 # [*mac_table_size*]
 #  Set the mac table size for the provider bridges if defined in ovn_bridge_mappings
 #  Defaults to 50000
@@ -87,6 +81,14 @@
 #  vlan type logical switch.
 #  Defaults to empty list
 #
+# DEPRECATED PARAMETERS
+#
+# [*enable_hw_offload*]
+#   (optional) Configure OVS to use
+#   Hardware Offload. This feature is
+#   supported from ovs 2.8.0.
+#   Defaults to undef.
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -95,7 +97,6 @@ class ovn::controller(
   $bridge_interface_mappings   = [],
   $hostname                    = $::fqdn,
   $ovn_bridge                  = 'br-int',
-  $enable_hw_offload           = false,
   $mac_table_size              = 50000,
   $datapath_type               = $::os_service_default,
   $enable_dpdk                 = false,
@@ -104,6 +105,8 @@ class ovn::controller(
   $ovn_transport_zones         = [],
   $enable_ovn_match_northd     = false,
   $ovn_chassis_mac_map         = [],
+  # DEPRECATED PARAMETERS
+  $enable_hw_offload           = undef,
 ) {
 
   include ovn::params
@@ -187,9 +190,15 @@ class ovn::controller(
     $tz_items = {}
   }
 
-  if $enable_hw_offload {
-    $hw_offload = { 'other_config:hw-offload' => { 'value' => bool2str($enable_hw_offload) } }
-  }else {
+  if $enable_hw_offload != undef {
+    warning('The ovn::controller::enable_hw_offload parmaeter is deperecated. \
+Use the same parameter of vswitch::ovs or vswitch::dpdk')
+    if $enable_hw_offload {
+      $hw_offload = { 'other_config:hw-offload' => { 'value' => bool2str($enable_hw_offload) } }
+    } else {
+      $hw_offload = {}
+    }
+  } else {
     $hw_offload = {}
   }
 
