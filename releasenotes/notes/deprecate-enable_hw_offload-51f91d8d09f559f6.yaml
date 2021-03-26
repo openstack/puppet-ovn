@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The ``ovn::controller::enable_hw_offload`` parameter has been deprecated.
+    Use the same parameter of ``vswitch::ovs`` or ``vswitch::dpdk`` instead.
