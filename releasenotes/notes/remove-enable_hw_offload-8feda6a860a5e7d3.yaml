@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``ovn::controller::enable_hw_offload`` prameter has been removed

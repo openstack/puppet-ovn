@@ -81,14 +81,6 @@
 #  vlan type logical switch.
 #  Defaults to empty list
 #
-# DEPRECATED PARAMETERS
-#
-# [*enable_hw_offload*]
-#   (optional) Configure OVS to use
-#   Hardware Offload. This feature is
-#   supported from ovs 2.8.0.
-#   Defaults to undef.
-#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -105,8 +97,6 @@ class ovn::controller(
   $ovn_transport_zones         = [],
   $enable_ovn_match_northd     = false,
   $ovn_chassis_mac_map         = [],
-  # DEPRECATED PARAMETERS
-  $enable_hw_offload           = undef,
 ) {
 
   include ovn::params
@@ -190,18 +180,6 @@ class ovn::controller(
     $tz_items = {}
   }
 
-  if $enable_hw_offload != undef {
-    warning('The ovn::controller::enable_hw_offload parmaeter is deperecated. \
-Use the same parameter of vswitch::ovs or vswitch::dpdk')
-    if $enable_hw_offload {
-      $hw_offload = { 'other_config:hw-offload' => { 'value' => bool2str($enable_hw_offload) } }
-    } else {
-      $hw_offload = {}
-    }
-  } else {
-    $hw_offload = {}
-  }
-
   if ! is_service_default($datapath_type) {
     $datapath_config = { 'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type } }
   } else {
@@ -211,7 +189,7 @@ Use the same parameter of vswitch::ovs or vswitch::dpdk')
   $ovn_match_northd = {
     'external_ids:ovn-match-northd-version' => { 'value' => bool2str($enable_ovn_match_northd) }
   }
-  create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $tz_items, $hw_offload, $datapath_config, $ovn_match_northd))
+  create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 
   if !empty($ovn_bridge_mappings) {

@@ -10,7 +10,6 @@ describe 'ovn::controller' do
       :ovn_bridge                  => 'br-int',
       :bridge_interface_mappings   => ['br-1:eth1'],
       :hostname                    => 'server1.example.com',
-      :enable_hw_offload           => false,
       :mac_table_size              => 20000,
       :ovn_remote_probe_interval   => 30000,
       :ovn_openflow_probe_interval => 8,
