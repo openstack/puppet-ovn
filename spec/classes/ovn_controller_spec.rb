@@ -14,6 +14,7 @@ describe 'ovn::controller' do
       :mac_table_size              => 20000,
       :ovn_remote_probe_interval   => 30000,
       :ovn_openflow_probe_interval => 8,
+      :ovn_monitor_all             => true,
       :ovn_transport_zones         => ['tz1'],
       :enable_ovn_match_northd     => false,
       :ovn_chassis_mac_map         => ['physnet1:aa:bb:cc:dd:ee:ff',
@@ -75,6 +76,10 @@ describe 'ovn::controller' do
 
       is_expected.to contain_vs_config('external_ids:ovn-openflow-probe-interval').with(
         :value   => params[:ovn_openflow_probe_interval],
+      )
+
+      is_expected.to contain_vs_config('external_ids:ovn-monitor-all').with(
+        :value   => params[:ovn_monitor_all],
       )
 
       is_expected.to contain_vs_config('external_ids:ovn-transport-zones').with(

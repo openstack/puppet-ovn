@@ -81,6 +81,12 @@
 #  vlan type logical switch.
 #  Defaults to empty list
 #
+# [*ovn_monitor_all*]
+#  (optional) A boolean value that tells if ovn-controller should monitor all
+#  records of tables in ovs-database. If set to false, it will conditionally
+#  monitor the records that is needed in the current chassis.
+#  Default to false (keep the original behavior)
+#
 # DEPRECATED PARAMETERS
 #
 # [*enable_hw_offload*]
@@ -105,6 +111,7 @@ class ovn::controller(
   $ovn_transport_zones         = [],
   $enable_ovn_match_northd     = false,
   $ovn_chassis_mac_map         = [],
+  $ovn_monitor_all             = false,
   # DEPRECATED PARAMETERS
   $enable_hw_offload           = undef,
 ) {
@@ -149,6 +156,7 @@ class ovn::controller(
     'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
     'external_ids:ovn-remote-probe-interval'    => { 'value' => "${ovn_remote_probe_interval}" },
     'external_ids:ovn-openflow-probe-interval'  => { 'value' => "${ovn_openflow_probe_interval}" },
+    'external_ids:ovn-monitor-all'              => { 'value' => "${ovn_monitor_all}" },
   }
 
   if !empty($ovn_chassis_mac_map) {
