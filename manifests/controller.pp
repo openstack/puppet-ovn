@@ -177,7 +177,9 @@ class ovn::controller(
       require => Service['openvswitch']
     }
   } else {
-    $bridge_items = {}
+    $bridge_items = {
+      'external_ids:ovn-bridge-mappings' => { 'ensure' => 'absent' }
+    }
   }
 
   if !empty($ovn_transport_zones) {
