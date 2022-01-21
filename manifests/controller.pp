@@ -185,13 +185,19 @@ class ovn::controller(
       'external_ids:ovn-transport-zones' => { 'value' => join(any2array($ovn_transport_zones), ',') }
     }
   } else {
-    $tz_items = {}
+    $tz_items = {
+      'external_ids:ovn-transport-zones' => { 'ensure' => 'absent' }
+    }
   }
 
   if ! is_service_default($datapath_type) {
-    $datapath_config = { 'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type } }
+    $datapath_config = {
+      'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type }
+    }
   } else {
-    $datapath_config = {}
+    $datapath_config = {
+      'external_ids:ovn-bridge-datapath-type' => { 'ensure' => 'absent' }
+    }
   }
 
   $ovn_match_northd = {
@@ -217,20 +223,6 @@ class ovn::controller(
           require => [ Service['openvswitch'], Vs_bridge[$br] ],
         }
       }
-    }
-  } else {
-    # ovn-bridge-mappings is not defined. Clear the existing value if configured.
-    vs_config { 'external_ids:ovn-bridge-mappings':
-      ensure  => absent,
-      require => Service['openvswitch']
-    }
-  }
-
-  if empty($ovn_transport_zones) {
-    # ovn-transport-zones is not defined. Clear the existing value if configured.
-    vs_config { 'external_ids:ovn-transport-zones':
-      ensure  => absent,
-      require => Service['openvswitch']
     }
   }
 }
