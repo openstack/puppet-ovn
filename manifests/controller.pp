@@ -35,7 +35,7 @@
 #
 # [*mac_table_size*]
 #  Set the mac table size for the provider bridges if defined in ovn_bridge_mappings
-#  Defaults to 50000
+#  Defaults to undef
 #
 # [*datapath_type*]
 #   (optional) Datapath type for ovs bridges
@@ -95,7 +95,7 @@ class ovn::controller(
   $bridge_interface_mappings   = [],
   $hostname                    = $::fqdn,
   $ovn_bridge                  = 'br-int',
-  $mac_table_size              = 50000,
+  $mac_table_size              = undef,
   $datapath_type               = $::os_service_default,
   $enable_dpdk                 = false,
   $ovn_remote_probe_interval   = 60000,
@@ -217,12 +217,21 @@ class ovn::controller(
         # TODO(numans): Right now puppet-vswitch's vs_bridge doesn't support
         # setting the column 'other-config' for the Bridge table.
         # Switch to using vs_bridge once the support is available.
-        exec { $br:
-          command => "ovs-vsctl --timeout=5 set Bridge ${br} other-config:mac-table-size=${mac_table_size}",
-          unless  => "ovs-vsctl get bridge ${br} other-config:mac-table-size | grep -q -w ${mac_table_size}",
-          path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-          onlyif  => "ovs-vsctl br-exists ${br}",
-          require => [ Service['openvswitch'], Vs_bridge[$br] ],
+        if $mac_table_size != undef {
+          exec { $br:
+            command => "ovs-vsctl --timeout=5 set Bridge ${br} other-config:mac-table-size=${mac_table_size}",
+            unless  => "ovs-vsctl get bridge ${br} other-config:mac-table-size | grep -q -w ${mac_table_size}",
+            path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+            onlyif  => "ovs-vsctl br-exists ${br}",
+            require => [ Service['openvswitch'], Vs_bridge[$br] ],
+          }
+        } else {
+          exec { $br:
+            command => "ovs-vsctl --timeout=5 remove Bridge ${br} other-config:mac-table-size",
+            path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+            onlyif  => ["ovs-vsctl br-exists ${br}", "ovs-vsctl get bridge ${br} other-config:mac-table-size"],
+            require => [ Service['openvswitch'], Vs_bridge[$br] ],
+          }
         }
       }
     }

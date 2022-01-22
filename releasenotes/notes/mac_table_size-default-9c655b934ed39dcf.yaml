@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Default value of ``ovn::controller::mac_table_size`` has been changed from
+    ``50000`` to ``undef``, which uses the default value defined in ovs itself.
