@@ -39,7 +39,7 @@
 #
 # [*datapath_type*]
 #   (optional) Datapath type for ovs bridges
-#   Defaults to $::os_service_default
+#   Defaults to undef
 #
 # [*enable_dpdk*]
 #   (optional) Enable or not DPDK with OVS
@@ -96,7 +96,7 @@ class ovn::controller(
   $hostname                    = $::fqdn,
   $ovn_bridge                  = 'br-int',
   $mac_table_size              = undef,
-  $datapath_type               = $::os_service_default,
+  $datapath_type               = undef,
   $enable_dpdk                 = false,
   $ovn_remote_probe_interval   = 60000,
   $ovn_openflow_probe_interval = 60,
@@ -192,13 +192,14 @@ class ovn::controller(
     }
   }
 
-  if ! is_service_default($datapath_type) {
+  if is_service_default($datapath_type) {
+    warning('Usage of $::os_service_default has been deprecated. Use undef instead')
     $datapath_config = {
-      'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type }
+      'external_ids:ovn-bridge-datapath-type' => { 'ensure' => 'absent' }
     }
   } else {
     $datapath_config = {
-      'external_ids:ovn-bridge-datapath-type' => { 'ensure' => 'absent' }
+      'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type }
     }
   }
 

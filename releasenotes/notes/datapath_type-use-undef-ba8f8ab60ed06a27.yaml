@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    Usage of ``$::os_service_default`` for ``ovn::controller::datapath_type``
+    has been deprecated. Use ``undef`` instead.
