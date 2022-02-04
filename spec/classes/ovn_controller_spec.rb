@@ -150,6 +150,19 @@ describe 'ovn::controller' do
         )
       end
     end
+
+    context 'when manage_ovs_bridge is false' do
+      before :each do
+        params.merge!({
+          :manage_ovs_bridge => false,
+        })
+      end
+
+      it 'does not manage ovs bridge' do
+        is_expected.to_not contain_ovn__controller__bridge(params[:ovn_bridge_mappings].join(','))
+        is_expected.to_not contain_ovn__controller__port(params[:bridge_interface_mappings].join(','))
+      end
+    end
   end
 
   on_supported_os({

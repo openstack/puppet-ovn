@@ -87,6 +87,10 @@
 #  monitor the records that is needed in the current chassis.
 #  Default to false (keep the original behavior)
 #
+# [*manage_ovs_bridge*]
+#  (optional) Create ovs bridges according to ovn_bridge_mappings.
+#  Defaults to true
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -104,6 +108,7 @@ class ovn::controller(
   $enable_ovn_match_northd     = false,
   $ovn_chassis_mac_map         = [],
   $ovn_monitor_all             = false,
+  $manage_ovs_bridge           = true
 ) {
 
   include ovn::params
@@ -168,13 +173,15 @@ class ovn::controller(
       'external_ids:ovn-bridge-mappings' => { 'value' => join(any2array($ovn_bridge_mappings), ',') }
     }
 
-    ovn::controller::bridge { $ovn_bridge_mappings:
-      before  => Service['controller'],
-      require => Service['openvswitch']
-    }
-    ovn::controller::port { $bridge_interface_mappings:
-      before  => Service['controller'],
-      require => Service['openvswitch']
+    if $manage_ovs_bridge {
+      ovn::controller::bridge { $ovn_bridge_mappings:
+        before  => Service['controller'],
+        require => Service['openvswitch']
+      }
+      ovn::controller::port { $bridge_interface_mappings:
+        before  => Service['controller'],
+        require => Service['openvswitch']
+      }
     }
   } else {
     $bridge_items = {
@@ -214,7 +221,7 @@ class ovn::controller(
     $ovn_bridge_mappings.each |String $mappings| {
       $mapping = split($mappings, ':')
       $br = $mapping[1]
-      if !empty($br) {
+      if !empty($br) and $manage_ovs_bridge {
         # TODO(numans): Right now puppet-vswitch's vs_bridge doesn't support
         # setting the column 'other-config' for the Bridge table.
         # Switch to using vs_bridge once the support is available.

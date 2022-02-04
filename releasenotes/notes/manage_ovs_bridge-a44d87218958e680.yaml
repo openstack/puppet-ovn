@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The new ``ovn::controller::manage_ovs_bridge`` parameter has been added.
+    Setting this parameter to ``false``, the ``ovn::controller`` does not
+    manage ovs bridges and ports associated with bridges.
