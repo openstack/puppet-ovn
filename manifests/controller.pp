@@ -235,7 +235,7 @@ class ovn::controller(
           }
         } else {
           exec { $br:
-            command => "ovs-vsctl --timeout=5 remove Bridge ${br} other-config:mac-table-size",
+            command => "ovs-vsctl --timeout=5 remove Bridge ${br} other-config mac-table-size",
             path    => '/usr/sbin:/usr/bin:/sbin:/bin',
             onlyif  => ["ovs-vsctl br-exists ${br}", "ovs-vsctl get bridge ${br} other-config:mac-table-size"],
             require => [ Service['openvswitch'], Vs_bridge[$br] ],

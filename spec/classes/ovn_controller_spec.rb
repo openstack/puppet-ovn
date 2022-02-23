@@ -110,7 +110,7 @@ describe 'ovn::controller' do
 
     it 'clears mac_table_size' do
       is_expected.to contain_exec('br-1').with(
-        :command => 'ovs-vsctl --timeout=5 remove Bridge br-1 other-config:mac-table-size',
+        :command => 'ovs-vsctl --timeout=5 remove Bridge br-1 other-config mac-table-size',
         :path    => '/usr/sbin:/usr/bin:/sbin:/bin',
         :onlyif  => [ 'ovs-vsctl br-exists br-1', 'ovs-vsctl get bridge br-1 other-config:mac-table-size'],
         :require => [ 'Service[openvswitch]', 'Vs_bridge[br-1]' ],
