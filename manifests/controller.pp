@@ -45,6 +45,11 @@
 #   (optional) Enable or not DPDK with OVS
 #   Defaults to false.
 #
+# [*ovn_cms_options*]
+#   (optional) A list of options that will be consumed by the CMS Plugin and
+#   which specific to this particular chassis.
+#   Defaults to undef
+#
 # [*ovn_remote_probe_interval*]
 #  (optional) Set probe interval, based on user configuration, value is in ms
 #  Defaults to 60000
@@ -102,6 +107,7 @@ class ovn::controller(
   $mac_table_size              = undef,
   $datapath_type               = undef,
   $enable_dpdk                 = false,
+  $ovn_cms_options             = undef,
   $ovn_remote_probe_interval   = 60000,
   $ovn_openflow_probe_interval = 60,
   $ovn_transport_zones         = [],
@@ -143,12 +149,18 @@ class ovn::controller(
     before => Service['controller']
   }
 
+  $ovn_cms_options_real = $ovn_cms_options == undef ? {
+    true    => $ovn_cms_options,
+    default => join(any2array($ovn_cms_options), ',')
+  }
+
   $config_items = {
     'external_ids:ovn-remote'                   => { 'value' => $ovn_remote },
     'external_ids:ovn-encap-type'               => { 'value' => $ovn_encap_type },
     'external_ids:ovn-encap-ip'                 => { 'value' => $ovn_encap_ip },
     'external_ids:hostname'                     => { 'value' => $hostname },
     'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
+    'external_ids:ovn-cms-options'              => { 'value' => $ovn_cms_options_real },
     'external_ids:ovn-remote-probe-interval'    => { 'value' => "${ovn_remote_probe_interval}" },
     'external_ids:ovn-openflow-probe-interval'  => { 'value' => "${ovn_openflow_probe_interval}" },
     'external_ids:ovn-monitor-all'              => { 'value' => "${ovn_monitor_all}" },
