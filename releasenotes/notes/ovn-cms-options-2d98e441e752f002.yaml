@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``ovn::controller::ovn_cms_options`` parameter has been added.

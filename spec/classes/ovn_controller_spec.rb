@@ -10,6 +10,7 @@ describe 'ovn::controller' do
       :ovn_bridge                  => 'br-int',
       :bridge_interface_mappings   => ['br-1:eth1'],
       :hostname                    => 'server1.example.com',
+      :ovn_cms_options             => ['cms_option1', 'cms_option2:foo'],
       :ovn_remote_probe_interval   => 30000,
       :ovn_openflow_probe_interval => 8,
       :ovn_monitor_all             => true,
@@ -66,6 +67,10 @@ describe 'ovn::controller' do
 
       is_expected.to contain_vs_config('external_ids:ovn-bridge').with(
         :value   => params[:ovn_bridge],
+      )
+
+      is_expected.to contain_vs_config('external_ids:ovn-cms-options').with(
+        :value   => 'cms_option1,cms_option2:foo',
       )
 
       is_expected.to contain_vs_config('external_ids:ovn-remote-probe-interval').with(
