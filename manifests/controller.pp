@@ -119,7 +119,7 @@ class ovn::controller(
 
   include ovn::params
 
-  if $enable_dpdk and is_service_default($datapath_type) {
+  if $enable_dpdk and (is_service_default($datapath_type) or $datapath_type == undef){
     fail('Datapath type must be set when DPDK is enabled')
   }
 
