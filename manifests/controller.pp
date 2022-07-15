@@ -161,9 +161,9 @@ class ovn::controller(
     'external_ids:hostname'                     => { 'value' => $hostname },
     'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
     'external_ids:ovn-cms-options'              => { 'value' => $ovn_cms_options_real },
-    'external_ids:ovn-remote-probe-interval'    => { 'value' => "${ovn_remote_probe_interval}" },
-    'external_ids:ovn-openflow-probe-interval'  => { 'value' => "${ovn_openflow_probe_interval}" },
-    'external_ids:ovn-monitor-all'              => { 'value' => "${ovn_monitor_all}" },
+    'external_ids:ovn-remote-probe-interval'    => { 'value' => $ovn_remote_probe_interval },
+    'external_ids:ovn-openflow-probe-interval'  => { 'value' => $ovn_openflow_probe_interval },
+    'external_ids:ovn-monitor-all'              => { 'value' => $ovn_monitor_all },
   }
 
   if !empty($ovn_chassis_mac_map) {
@@ -223,7 +223,7 @@ class ovn::controller(
   }
 
   $ovn_match_northd = {
-    'external_ids:ovn-match-northd-version' => { 'value' => bool2str($enable_ovn_match_northd) }
+    'external_ids:ovn-match-northd-version' => { 'value' => $enable_ovn_match_northd }
   }
   create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
