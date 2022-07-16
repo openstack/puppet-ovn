@@ -102,15 +102,19 @@ describe 'ovn::controller' do
         :value    => 'physnet-1:br-1',
       )
 
-      is_expected.to contain_ovn__controller__bridge(params[:ovn_bridge_mappings].join(',')).with(
-        :before  => 'Service[controller]',
-        :require => 'Service[openvswitch]'
-      )
+      params[:ovn_bridge_mappings].each do |mapping|
+        is_expected.to contain_ovn__controller__bridge(mapping).with(
+          :before  => 'Service[controller]',
+          :require => 'Service[openvswitch]'
+        )
+      end
 
-      is_expected.to contain_ovn__controller__port(params[:bridge_interface_mappings].join(',')).with(
-        :before  => 'Service[controller]',
-        :require => 'Service[openvswitch]'
-      )
+      params[:bridge_interface_mappings].each do |mapping|
+        is_expected.to contain_ovn__controller__port(mapping).with(
+          :before  => 'Service[controller]',
+          :require => 'Service[openvswitch]'
+        )
+      end
     end
 
     it 'clears mac_table_size' do
@@ -164,8 +168,12 @@ describe 'ovn::controller' do
       end
 
       it 'does not manage ovs bridge' do
-        is_expected.to_not contain_ovn__controller__bridge(params[:ovn_bridge_mappings].join(','))
-        is_expected.to_not contain_ovn__controller__port(params[:bridge_interface_mappings].join(','))
+        params[:ovn_bridge_mappings].each do |mapping|
+          is_expected.to_not contain_ovn__controller__bridge(mapping)
+        end
+        params[:bridge_interface_mappings].each do |mapping|
+          is_expected.to_not contain_ovn__controller__port(mapping)
+        end
       end
     end
   end
