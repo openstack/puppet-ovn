@@ -117,15 +117,6 @@ describe 'ovn::controller' do
       end
     end
 
-    it 'clears mac_table_size' do
-      is_expected.to contain_exec('br-1').with(
-        :command => 'ovs-vsctl --timeout=5 remove Bridge br-1 other-config mac-table-size',
-        :path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-        :onlyif  => [ 'ovs-vsctl br-exists br-1', 'ovs-vsctl get bridge br-1 other-config:mac-table-size'],
-        :require => [ 'Service[openvswitch]', 'Vs_bridge[br-1]' ],
-      )
-    end
-
     context 'when ovn_chassis_mac_map is a hash' do
       before :each do
         params.merge!({
@@ -150,13 +141,13 @@ describe 'ovn::controller' do
       end
 
       it 'configures mac_table_size' do
-        is_expected.to contain_exec('br-1').with(
-          :command => 'ovs-vsctl --timeout=5 set Bridge br-1 other-config:mac-table-size=20000',
-          :unless  => 'ovs-vsctl get bridge br-1 other-config:mac-table-size | grep -q -w 20000',
-          :path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-          :onlyif  => [ 'ovs-vsctl br-exists br-1' ],
-          :require => [ 'Service[openvswitch]', 'Vs_bridge[br-1]' ],
-        )
+        params[:ovn_bridge_mappings].each do |mapping|
+          is_expected.to contain_ovn__controller__bridge(mapping).with(
+            :mac_table_size => 20000,
+            :before         => 'Service[controller]',
+            :require        => 'Service[openvswitch]'
+          )
+        end
       end
     end
 

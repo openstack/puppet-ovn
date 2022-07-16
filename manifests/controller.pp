@@ -187,8 +187,9 @@ class ovn::controller(
 
     if $manage_ovs_bridge {
       ovn::controller::bridge { $ovn_bridge_mappings:
-        before  => Service['controller'],
-        require => Service['openvswitch']
+        mac_table_size => $mac_table_size,
+        before         => Service['controller'],
+        require        => Service['openvswitch']
       }
       ovn::controller::port { $bridge_interface_mappings:
         before  => Service['controller'],
@@ -227,33 +228,4 @@ class ovn::controller(
   }
   create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd))
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
-
-  if !empty($ovn_bridge_mappings) {
-    # For each provider bridge, set the mac table size.
-    $ovn_bridge_mappings.each |String $mappings| {
-      $mapping = split($mappings, ':')
-      $br = $mapping[1]
-      if !empty($br) and $manage_ovs_bridge {
-        # TODO(numans): Right now puppet-vswitch's vs_bridge doesn't support
-        # setting the column 'other-config' for the Bridge table.
-        # Switch to using vs_bridge once the support is available.
-        if $mac_table_size != undef {
-          exec { $br:
-            command => "ovs-vsctl --timeout=5 set Bridge ${br} other-config:mac-table-size=${mac_table_size}",
-            unless  => "ovs-vsctl get bridge ${br} other-config:mac-table-size | grep -q -w ${mac_table_size}",
-            path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-            onlyif  => "ovs-vsctl br-exists ${br}",
-            require => [ Service['openvswitch'], Vs_bridge[$br] ],
-          }
-        } else {
-          exec { $br:
-            command => "ovs-vsctl --timeout=5 remove Bridge ${br} other-config mac-table-size",
-            path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-            onlyif  => ["ovs-vsctl br-exists ${br}", "ovs-vsctl get bridge ${br} other-config:mac-table-size"],
-            require => [ Service['openvswitch'], Vs_bridge[$br] ],
-          }
-        }
-      }
-    }
-  }
 }
