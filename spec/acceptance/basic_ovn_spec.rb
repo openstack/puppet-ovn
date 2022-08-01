@@ -7,11 +7,7 @@ describe 'basic ovn deployment' do
     include openstack_integration
     include openstack_integration::repos
 
-    include ovn::northd
-    class { 'ovn::controller':
-      ovn_remote   => 'tcp:127.0.0.1:6642',
-      ovn_encap_ip => '127.0.0.1',
-    }
+    include openstack_integration::ovn
     EOS
 
     it 'should work with no errors' do
@@ -22,6 +18,9 @@ describe 'basic ovn deployment' do
 
     it 'should show successfully' do
       command('ovn-nbctl show') do |r|
+        expect(r.exit_code).to eq 0
+      end
+      command('ovn-sbctl show') do |r|
         expect(r.exit_code).to eq 0
       end
     end
