@@ -119,7 +119,7 @@ class ovn::controller(
 
   include ovn::params
 
-  if $enable_dpdk and (is_service_default($datapath_type) or $datapath_type == undef){
+  if $enable_dpdk and (is_service_default($datapath_type) or !$datapath_type) {
     fail('Datapath type must be set when DPDK is enabled')
   }
 
@@ -216,9 +216,13 @@ class ovn::controller(
     $datapath_config = {
       'external_ids:ovn-bridge-datapath-type' => { 'ensure' => 'absent' }
     }
-  } else {
+  } elsif $datapath_type {
     $datapath_config = {
       'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type }
+    }
+  } else {
+    $datapath_config = {
+      'external_ids:ovn-bridge-datapath-type' => { 'ensure' => 'absent' }
     }
   }
 
