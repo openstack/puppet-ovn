@@ -6,6 +6,7 @@ describe 'ovn::controller' do
     { :ovn_remote                  => 'tcp:x.x.x.x:5000',
       :ovn_encap_type              => 'geneve',
       :ovn_encap_ip                => '1.2.3.4',
+      :ovn_encap_tos               => 0,
       :ovn_bridge_mappings         => ['physnet-1:br-1'],
       :ovn_bridge                  => 'br-int',
       :bridge_interface_mappings   => ['br-1:eth1'],
@@ -71,6 +72,10 @@ describe 'ovn::controller' do
 
       is_expected.to contain_vs_config('external_ids:ovn-cms-options').with(
         :value   => 'cms_option1,cms_option2:foo',
+      )
+
+      is_expected.to contain_vs_config('external_ids:ovn-encap-tos').with(
+        :value   => 0,
       )
 
       is_expected.to contain_vs_config('external_ids:ovn-remote-probe-interval').with(
