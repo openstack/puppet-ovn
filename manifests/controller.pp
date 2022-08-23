@@ -17,6 +17,10 @@
 #   (Required) IP address of the hypervisor(in which this module is installed) to which
 #   the other controllers would use to create a tunnel to this controller
 #
+# [*ovn_encap_tos*]
+#   (Optional) The value to be applied to OVN tunnel interface's option:tos.
+#   Defaults to undef
+#
 # [*ovn_bridge_mappings*]
 #   (optional) List of <ovn-network-name>:<bridge-name>
 #   Defaults to empty list
@@ -91,6 +95,7 @@ class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
   $ovn_encap_type              = 'geneve',
+  $ovn_encap_tos               = undef,
   $ovn_bridge_mappings         = [],
   $bridge_interface_mappings   = [],
   $hostname                    = $::fqdn,
@@ -149,6 +154,16 @@ class ovn::controller(
     'external_ids:ovn-monitor-all'              => { 'value' => "${ovn_monitor_all}" },
   }
 
+  if $ovn_encap_tos {
+    $encap_tos = {
+      'external_ids:ovn-encap-tos' => { 'value' => $ovn_encap_tos }
+    }
+  } else {
+    $encap_tos = {
+      'external_ids:ovn-encap-tos' => { 'ensure' => 'absent' }
+    }
+  }
+
   if !empty($ovn_chassis_mac_map) {
     if $ovn_chassis_mac_map =~ Hash {
       $chassis_mac_map = {
@@ -197,7 +212,10 @@ class ovn::controller(
   $ovn_match_northd = {
     'external_ids:ovn-match-northd-version' => { 'value' => bool2str($enable_ovn_match_northd) }
   }
-  create_resources('vs_config', merge($config_items, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd))
+  create_resources(
+    'vs_config',
+    merge($config_items, $encap_tos, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd)
+  )
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 
   if !empty($ovn_bridge_mappings) {
