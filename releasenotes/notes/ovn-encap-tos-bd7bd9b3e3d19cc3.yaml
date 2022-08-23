@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``ovn::controller::encap_tos`` parameter has been added. This
+    parameter controls the ``ovn-encap-tos`` external id.
