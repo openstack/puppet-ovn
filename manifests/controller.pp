@@ -154,21 +154,25 @@ class ovn::controller(
     before => Service['controller']
   }
 
-  $ovn_cms_options_real = $ovn_cms_options == undef ? {
-    true    => $ovn_cms_options,
-    default => join(any2array($ovn_cms_options), ',')
-  }
-
   $config_items = {
     'external_ids:ovn-remote'                   => { 'value' => $ovn_remote },
     'external_ids:ovn-encap-type'               => { 'value' => $ovn_encap_type },
     'external_ids:ovn-encap-ip'                 => { 'value' => $ovn_encap_ip },
     'external_ids:hostname'                     => { 'value' => $hostname },
     'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
-    'external_ids:ovn-cms-options'              => { 'value' => $ovn_cms_options_real },
     'external_ids:ovn-remote-probe-interval'    => { 'value' => $ovn_remote_probe_interval },
     'external_ids:ovn-openflow-probe-interval'  => { 'value' => $ovn_openflow_probe_interval },
     'external_ids:ovn-monitor-all'              => { 'value' => $ovn_monitor_all },
+  }
+
+  if $ovn_cms_options {
+    $cms_options = {
+      'external_ids:ovn-cms-options' => { 'value' => join(any2array($ovn_cms_options), ',') }
+    }
+  } else {
+    $cms_options = {
+      'external_ids:ovn-cms-options' => { 'ensure' => 'absent' }
+    }
   }
 
   if $ovn_encap_tos {
@@ -192,7 +196,9 @@ class ovn::controller(
       }
     }
   } else {
-    $chassis_mac_map = {}
+    $chassis_mac_map = {
+      'external_ids:ovn-chassis-mac-mappings' => { 'ensure' => 'absent' }
+    }
   }
 
   if !empty($ovn_bridge_mappings) {
@@ -247,7 +253,7 @@ class ovn::controller(
   }
   create_resources(
     'vs_config',
-    merge($config_items, $encap_tos, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd)
+    merge($config_items, $cms_options, $encap_tos, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd)
   )
   Service['openvswitch'] -> Vs_config<||> -> Service['controller']
 }
