@@ -255,5 +255,6 @@ class ovn::controller(
     'vs_config',
     merge($config_items, $cms_options, $encap_tos, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd)
   )
-  Service['openvswitch'] -> Vs_config<||> -> Service['controller']
+
+  Vs_config<||> -> Service['controller']
 }
