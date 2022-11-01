@@ -100,6 +100,9 @@ describe 'ovn::controller' do
       is_expected.to contain_vs_config('external_ids:ovn-chassis-mac-mappings').with(
         :value    => 'physnet1:aa:bb:cc:dd:ee:ff,physnet2:bb:aa:cc:dd:ee:ff',
       )
+      is_expected.to contain_vs_config('external_ids:ovn-ofctrl-wait-before-clear').with(
+        :value    => "8000"
+      )
     end
 
     it 'configures bridge mappings' do
