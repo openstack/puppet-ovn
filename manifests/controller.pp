@@ -91,6 +91,11 @@
 #  monitor the records that is needed in the current chassis.
 #  Default to false (keep the original behavior)
 #
+# [*ovn_ofctrl_wait_before_clear*]
+#  (optional) Time (ms) to wait at startup before clearing openflow rules and
+#  install new ones.
+#  Defaults to 8000
+#
 # DEPRECATED PARAMETERS
 #
 # [*enable_hw_offload*]
@@ -117,6 +122,7 @@ class ovn::controller(
   $enable_ovn_match_northd     = false,
   $ovn_chassis_mac_map         = [],
   $ovn_monitor_all             = false,
+  $ovn_ofctrl_wait_before_clear = 8000,
   # DEPRECATED PARAMETERS
   $enable_hw_offload           = undef,
 ) {
@@ -162,6 +168,7 @@ class ovn::controller(
     'external_ids:ovn-remote-probe-interval'    => { 'value' => "${ovn_remote_probe_interval}" },
     'external_ids:ovn-openflow-probe-interval'  => { 'value' => "${ovn_openflow_probe_interval}" },
     'external_ids:ovn-monitor-all'              => { 'value' => "${ovn_monitor_all}" },
+    'external_ids:ovn-ofctrl-wait-before-clear' => { 'value' => "${$ovn_ofctrl_wait_before_clear}" },
   }
 
   if $ovn_encap_tos {
