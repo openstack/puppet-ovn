@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    The new ``ovn::controller::ovn_ofctrl_wait_before_clear`` parameter
+    has been added to resolve an issue with dataplane downtime during
+    upgrades that involve OVN schema changes. It will delay delting and
+    re-adding openflow rules by the configured time in ms to give
+    ovn-controller time to handle db connection / reconnection that can
+    happen in this case. The default of 8000ms is based on upstream OVN
+    testing with 200k openflow rules. Since it involved a change in
+    behavior, the upstream OVN value defaults to unset.
