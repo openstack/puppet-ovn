@@ -77,6 +77,9 @@ describe 'ovn::controller' do
         is_expected.to contain_vs_config('external_ids:ovn-chassis-mac-mappings').with(
           :ensure => 'absent'
         )
+        is_expected.to contain_vs_config('external_ids:ovn-ofctrl-wait-before-clear').with(
+          :value => 8000
+        )
       end
 
       it 'configures bridge mappings' do
@@ -102,7 +105,8 @@ describe 'ovn::controller' do
           :ovn_transport_zones         => ['tz1'],
           :enable_ovn_match_northd     => false,
           :ovn_chassis_mac_map         => ['physnet1:aa:bb:cc:dd:ee:ff',
-                                           'physnet2:bb:aa:cc:dd:ee:ff']
+                                           'physnet2:bb:aa:cc:dd:ee:ff'],
+          :ovn_ofctrl_wait_before_clear => 9000
         })
       end
 
@@ -145,6 +149,9 @@ describe 'ovn::controller' do
         )
         is_expected.to contain_vs_config('external_ids:ovn-chassis-mac-mappings').with(
           :value => 'physnet1:aa:bb:cc:dd:ee:ff,physnet2:bb:aa:cc:dd:ee:ff',
+        )
+        is_expected.to contain_vs_config('external_ids:ovn-ofctrl-wait-before-clear').with(
+          :value => params[:ovn_ofctrl_wait_before_clear],
         )
       end
 
