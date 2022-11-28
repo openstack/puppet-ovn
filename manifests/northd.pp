@@ -15,10 +15,20 @@
 #   The IP-Address where OVN Clustered DBs sync from
 #   Defaults to undef
 #
+# [*ovn_northd_nb_db*]
+#   NB DB address(es)
+#   Defaults to undef
+#
+# [*ovn_northd_sb_db*]
+#   SB DB address(es)
+#   Defaults to undef
+#
 class ovn::northd(
   $dbs_listen_ip = '0.0.0.0',
   $dbs_cluster_local_addr = undef,
   $dbs_cluster_remote_addr = undef,
+  $ovn_northd_nb_db = undef,
+  $ovn_northd_sb_db = undef,
 ) {
   include ovn::params
   include vswitch::ovs
@@ -48,9 +58,25 @@ class ovn::northd(
     $ovn_northd_opts_cluster_remote_addr = []
   }
 
+  $ovn_northd_nb_db_opts = $ovn_northd_nb_db ? {
+    String        => ["--ovn-northd-nb-db=${ovn_northd_nb_db}"],
+    Array[String] => ["--ovn-northd-nb-db=${join($ovn_northd_nb_db, ',')}"],
+    undef         => [],
+    default       => fail('ovn_northd_nb_db_opts must be of type String or Array[String]'),
+  }
+
+  $ovn_northd_sb_db_opts = $ovn_northd_sb_db ? {
+    String        => ["--ovn-northd-sb-db=${ovn_northd_sb_db}"],
+    Array[String] => ["--ovn-northd-sb-db=${join($ovn_northd_sb_db, ',')}"],
+    undef         => [],
+    default       => fail('ovn_northd_sb_db_opts must be of type String or Array[String]'),
+  }
+
   $ovn_northd_opts = join($ovn_northd_opts_addr +
                           $ovn_northd_opts_cluster_local_addr +
-                          $ovn_northd_opts_cluster_remote_addr,
+                          $ovn_northd_opts_cluster_remote_addr +
+                          $ovn_northd_nb_db_opts +
+                          $ovn_northd_sb_db_opts,
                           ' ')
 
   augeas { 'config-ovn-northd':
