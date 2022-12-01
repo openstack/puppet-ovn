@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Add support for ovn-northd to connect via SSL to NB and SB DB. To enable
+    SSL, set the following parameters.
+
+    - ``ovn::northd::ovn_northd_ssl_key``
+    - ``ovn::northd::ovn_northd_ssl_cert``
+    - ``ovn::northd::ovn_northd_ssl_cacert``
