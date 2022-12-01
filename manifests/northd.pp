@@ -23,12 +23,27 @@
 #   SB DB address(es)
 #   Defaults to undef
 #
+# [*ovn_northd_ssl_key*]
+#   OVN Northd SSL private key file
+#   Defaults to undef
+#
+# [*ovn_northd_ssl_cert*]
+#   OVN Northd SSL certificate file
+#   Defaults to undef
+#
+# [*ovn_northd_ssl_ca_cert*]
+#   OVN Northd SSL CA certificate file
+#   Defaults to undef
+#
 class ovn::northd(
   $dbs_listen_ip = '0.0.0.0',
   $dbs_cluster_local_addr = undef,
   $dbs_cluster_remote_addr = undef,
   $ovn_northd_nb_db = undef,
   $ovn_northd_sb_db = undef,
+  $ovn_northd_ssl_key = undef,
+  $ovn_northd_ssl_cert = undef,
+  $ovn_northd_ssl_ca_cert = undef,
 ) {
   include ovn::params
   include vswitch::ovs
@@ -72,11 +87,24 @@ class ovn::northd(
     default       => fail('ovn_northd_sb_db_opts must be of type String or Array[String]'),
   }
 
+  if $ovn_northd_ssl_key and $ovn_northd_ssl_cert and $ovn_northd_ssl_ca_cert {
+    $ovn_northd_ssl_opts = [
+      "--ovn-northd-ssl-key=${ovn_northd_ssl_key}",
+      "--ovn-northd-ssl-cert=${ovn_northd_ssl_cert}",
+      "--ovn-northd-ssl-ca-cert=${ovn_northd_ssl_ca_cert}"
+    ]
+  } elsif ! ($ovn_northd_ssl_key or $ovn_northd_ssl_cert or $ovn_northd_ssl_ca_cert) {
+    $ovn_northd_ssl_opts = []
+  } else {
+    fail('The ovn_northd_ssl_key, cert and ca_cert are required to use SSL.')
+  }
+
   $ovn_northd_opts = join($ovn_northd_opts_addr +
                           $ovn_northd_opts_cluster_local_addr +
                           $ovn_northd_opts_cluster_remote_addr +
                           $ovn_northd_nb_db_opts +
-                          $ovn_northd_sb_db_opts,
+                          $ovn_northd_sb_db_opts +
+                          $ovn_northd_ssl_opts,
                           ' ')
 
   augeas { 'config-ovn-northd':

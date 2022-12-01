@@ -19,8 +19,11 @@ describe 'ovn::northd' do
     context 'with parameters' do
       let :params do
         {
-          :ovn_northd_nb_db => 'tcp:192.0.2.1:6645,tcp:192.0.2.2:6645,tcp:192.0.2.3:6645',
-          :ovn_northd_sb_db => ['tcp:192.0.2.1:6646', 'tcp:192.0.2.2:6646', 'tcp:192.0.2.3:6646'],
+          :ovn_northd_nb_db       => 'ssl:192.0.2.1:6645,ssl:192.0.2.2:6645,ssl:192.0.2.3:6645',
+          :ovn_northd_sb_db       => ['ssl:192.0.2.1:6646', 'ssl:192.0.2.2:6646', 'ssl:192.0.2.3:6646'],
+          :ovn_northd_ssl_key     => 'key.pem',
+          :ovn_northd_ssl_cert    => 'cert.pem',
+          :ovn_northd_ssl_ca_cert => 'cacert.pem',
         }
       end
 
@@ -29,10 +32,21 @@ describe 'ovn::northd' do
           :context => platform_params[:ovn_northd_context],
           :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
                       "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes" +
-                      " --ovn-northd-nb-db=tcp:192.0.2.1:6645,tcp:192.0.2.2:6645,tcp:192.0.2.3:6645 --ovn-northd-sb-db=tcp:192.0.2.1:6646,tcp:192.0.2.2:6646,tcp:192.0.2.3:6646" +
+                      " --ovn-northd-nb-db=ssl:192.0.2.1:6645,ssl:192.0.2.2:6645,ssl:192.0.2.3:6645 --ovn-northd-sb-db=ssl:192.0.2.1:6646,ssl:192.0.2.2:6646,ssl:192.0.2.3:6646" +
+                      " --ovn-northd-ssl-key=key.pem --ovn-northd-ssl-cert=cert.pem --ovn-northd-ssl-ca-cert=cacert.pem" +
                       "\"'",
         })
       end
+    end
+
+    context 'with bad ssl parameters' do
+      let :params do
+        {
+          :ovn_northd_ssl_key     => 'key.pem',
+        }
+      end
+
+      it { should raise_error(Puppet::Error, /The ovn_northd_ssl_key, cert and ca_cert are required to use SSL/) }
     end
 
   end
