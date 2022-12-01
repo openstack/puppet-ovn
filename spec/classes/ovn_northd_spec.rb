@@ -3,13 +3,38 @@ require 'spec_helper'
 describe 'ovn::northd' do
 
   shared_examples_for 'systemd env' do
-    it 'creates systemd conf' do
-      is_expected.to contain_augeas('config-ovn-northd').with({
-        :context => platform_params[:ovn_northd_context],
-        :changes => "set " + platform_params[:ovn_northd_option_name] +
-                    " '\"--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
-      })
+    context 'with default parameters' do
+      let :params do
+        {}
+      end
+      it 'creates systemd conf' do
+        is_expected.to contain_augeas('config-ovn-northd').with({
+          :context => platform_params[:ovn_northd_context],
+          :changes => "set " + platform_params[:ovn_northd_option_name] +
+                      " '\"--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
+        })
+      end
     end
+
+    context 'with parameters' do
+      let :params do
+        {
+          :ovn_northd_nb_db => 'tcp:192.0.2.1:6645,tcp:192.0.2.2:6645,tcp:192.0.2.3:6645',
+          :ovn_northd_sb_db => ['tcp:192.0.2.1:6646', 'tcp:192.0.2.2:6646', 'tcp:192.0.2.3:6646'],
+        }
+      end
+
+      it 'creates systemd conf' do
+        is_expected.to contain_augeas('config-ovn-northd').with({
+          :context => platform_params[:ovn_northd_context],
+          :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
+                      "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0 --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes" +
+                      " --ovn-northd-nb-db=tcp:192.0.2.1:6645,tcp:192.0.2.2:6645,tcp:192.0.2.3:6645 --ovn-northd-sb-db=tcp:192.0.2.1:6646,tcp:192.0.2.2:6646,tcp:192.0.2.3:6646" +
+                      "\"'",
+        })
+      end
+    end
+
   end
 
   shared_examples_for 'ovn northd' do

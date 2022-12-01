@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The ``ovn::northd`` class now supports the clustered OVN DB. Set
+    the ``ovn_northd_nb_db`` parameter and the ``ovn_southd_nb_db``
+    parameter.
