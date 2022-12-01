@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``ovn::controller::datapath_type`` parameter no longer supports
+    ``$::os_service_default``. Use ``undef`` instead.
