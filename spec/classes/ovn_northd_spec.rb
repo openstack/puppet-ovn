@@ -31,7 +31,7 @@ describe 'ovn::northd' do
       is_expected.to contain_package(platform_params[:ovn_northd_package_name]).with(
         :ensure => 'present',
         :name   => platform_params[:ovn_northd_package_name],
-        :before => 'Service[northd]'
+        :notify => 'Service[northd]'
       )
     end
   end

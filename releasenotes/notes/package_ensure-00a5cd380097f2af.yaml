@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``ovn::northd`` class and the ``ovn::controller`` class now support
+    customizing state of the packages, by the ``package_ensure`` parameter.
