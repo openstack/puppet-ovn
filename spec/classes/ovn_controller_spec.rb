@@ -32,7 +32,7 @@ describe 'ovn::controller' do
       is_expected.to contain_package(platform_params[:ovn_controller_package_name]).with(
         :ensure => 'present',
         :name   => platform_params[:ovn_controller_package_name],
-        :before => 'Service[controller]'
+        :notify => 'Service[controller]'
       )
     end
 

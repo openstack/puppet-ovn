@@ -9,13 +9,18 @@
 #   (Required) URL of the remote ovn southbound db.
 #   Example: 'tcp:127.0.0.1:6642'
 #
+# [*ovn_encap_ip*]
+#   (Required) IP address of the hypervisor(in which this module is installed)
+#   to which the other controllers would use to create a tunnel to this
+#   controller
+#
+# [*package_ensure*]
+#   (Optional) State of the openvswitch package
+#   Defaults to 'present'.
+#
 # [*ovn_encap_type*]
 #   (Optional) The encapsulation type to be used
 #   Defaults to 'geneve'
-#
-# [*ovn_encap_ip*]
-#   (Required) IP address of the hypervisor(in which this module is installed) to which
-#   the other controllers would use to create a tunnel to this controller
 #
 # [*ovn_encap_tos*]
 #   (Optional) The value to be applied to OVN tunnel interface's option:tos.
@@ -108,6 +113,7 @@
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
+  $package_ensure               = 'present',
   $ovn_encap_type               = 'geneve',
   $ovn_encap_tos                = undef,
   $ovn_bridge_mappings          = [],
@@ -155,9 +161,9 @@ class ovn::controller(
   }
 
   package { $::ovn::params::ovn_controller_package_name:
-    ensure => present,
+    ensure => $package_ensure,
+    notify => Service['controller'],
     name   => $::ovn::params::ovn_controller_package_name,
-    before => Service['controller']
   }
 
   $config_items = {
