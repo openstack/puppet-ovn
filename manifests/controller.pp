@@ -136,6 +136,11 @@ class ovn::controller(
 
   include ovn::params
 
+  validate_legacy(Boolean, 'validate_bool', $enable_dpdk)
+  validate_legacy(String, 'validate_string', $ovn_remote)
+  validate_legacy(String, 'validate_string', $ovn_encap_ip)
+  validate_legacy(Boolean, 'validate_bool', $manage_ovs_bridge)
+
   if $enable_dpdk and ! $datapath_type {
     fail('Datapath type must be set when DPDK is enabled')
   }
@@ -147,9 +152,6 @@ class ovn::controller(
   }
 
   include stdlib
-
-  validate_legacy(String, 'validate_string', $ovn_remote)
-  validate_legacy(String, 'validate_string', $ovn_encap_ip)
 
   service { 'controller':
     ensure    => true,
