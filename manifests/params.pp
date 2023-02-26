@@ -17,6 +17,8 @@ class ovn::params {
           $ovn_controller_service_name    = 'ovn-controller'
           $ovn_controller_service_status  = true
           $ovn_controller_service_pattern = undef
+          $ovn_controller_context         = '/files/etc/sysconfig/ovn-controller'
+          $ovn_controller_option_name     = 'OVN_CONTROLLER_OPTS'
       }
       'Debian': {
           $ovn_northd_package_name        = 'ovn-central'
@@ -29,6 +31,8 @@ class ovn::params {
           $ovn_controller_service_name    = 'ovn-host'
           $ovn_controller_service_status  = false # status broken in UCA
           $ovn_controller_service_pattern = 'ovn-controller'
+          $ovn_controller_context         = '/files/etc/default/ovn-host'
+          $ovn_controller_option_name     = 'OVN_CTL_OPTS'
       }
       default: {
         fail " Osfamily ${::osfamily} not supported yet"
