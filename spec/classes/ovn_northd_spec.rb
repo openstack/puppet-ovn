@@ -16,6 +16,21 @@ describe 'ovn::northd' do
       end
     end
 
+    context 'with ipv6' do
+      let :params do
+        {
+          :dbs_listen_ip => '::1'
+        }
+      end
+      it 'creates systemd conf' do
+        is_expected.to contain_augeas('config-ovn-northd').with({
+          :context => platform_params[:ovn_northd_context],
+          :changes => "set " + platform_params[:ovn_northd_option_name] +
+                      " '\"--db-nb-addr=[::1] --db-sb-addr=[::1] --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
+        })
+      end
+    end
+
     context 'with parameters' do
       let :params do
         {

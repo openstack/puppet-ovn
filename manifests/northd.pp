@@ -53,9 +53,11 @@ class ovn::northd(
   include ovn::params
   include vswitch::ovs
 
+  $dbs_listen_ip_real = normalize_ip_for_uri($dbs_listen_ip)
+
   $ovn_northd_opts_addr = [
-    "--db-nb-addr=${dbs_listen_ip}",
-    "--db-sb-addr=${dbs_listen_ip}",
+    "--db-nb-addr=${dbs_listen_ip_real}",
+    "--db-sb-addr=${dbs_listen_ip_real}",
     '--db-nb-create-insecure-remote=yes',
     '--db-sb-create-insecure-remote=yes'
   ]
