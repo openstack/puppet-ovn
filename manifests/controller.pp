@@ -36,7 +36,7 @@
 #
 # [*hostname*]
 #   (optional) The hostname to use with the external id
-#   Defaults to $::fqdn
+#   Defaults to $facts['networking']['fqdn']
 #
 # [*ovn_bridge*]
 #   (optional) Name of the integration bridge.
@@ -118,7 +118,7 @@ class ovn::controller(
   $ovn_encap_tos                = undef,
   $ovn_bridge_mappings          = [],
   $bridge_interface_mappings    = [],
-  $hostname                     = $::fqdn,
+  $hostname                     = $facts['networking']['fqdn'],
   $ovn_bridge                   = 'br-int',
   $mac_table_size               = undef,
   $datapath_type                = undef,

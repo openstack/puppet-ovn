@@ -5,7 +5,7 @@
 #
 class ovn::params {
   include openstacklib::defaults
-    case $::osfamily {
+    case $facts['os']['family'] {
       'RedHat': {
           $ovn_northd_package_name        = 'openvswitch-ovn-central'
           $ovn_controller_package_name    = 'openvswitch-ovn-host'
@@ -31,7 +31,7 @@ class ovn::params {
           $ovn_controller_service_pattern = 'ovn-controller'
       }
       default: {
-        fail " Osfamily ${::osfamily} not supported yet"
+        fail " Osfamily ${facts['os']['family']} not supported yet"
       }
     }
 }

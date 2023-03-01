@@ -48,7 +48,7 @@ describe 'ovn::controller' do
           :value => params[:ovn_encap_ip],
         )
         is_expected.to contain_vs_config('external_ids:hostname').with(
-          :value => 'server0.example.com',
+          :value => 'foo.example.com',
         )
         is_expected.to contain_vs_config('external_ids:ovn-bridge').with(
           :value => 'br-int',
@@ -236,12 +236,10 @@ describe 'ovn::controller' do
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts({
-          :fqdn => 'server0.example.com'
-        }))
+        facts.merge!(OSDefaults.get_facts())
       end
 
-      case facts[:osfamily]
+      case facts[:os]['family']
       when 'Debian'
         let :platform_params do
           {

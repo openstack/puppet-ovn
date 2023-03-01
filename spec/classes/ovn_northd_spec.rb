@@ -95,11 +95,10 @@ describe 'ovn::northd' do
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts({
-        }))
+        facts.merge!(OSDefaults.get_facts())
       end
 
-      case facts[:osfamily]
+      case facts[:os]['family']
       when 'Debian'
         let(:platform_params) do
           {
