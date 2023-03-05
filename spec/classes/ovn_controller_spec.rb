@@ -36,6 +36,13 @@ describe 'ovn::controller' do
       )
     end
 
+    it 'creates systemd conf' do
+      is_expected.to contain_augeas('config-ovn-controller').with({
+        :context => platform_params[:ovn_controller_context],
+        :changes => "set " + platform_params[:ovn_controller_option_name] + " '\"\"'",
+      })
+    end
+
     context 'with required parameters' do
       it 'configures ovsdb' do
         is_expected.to contain_vs_config('external_ids:ovn-remote').with(
@@ -229,6 +236,25 @@ describe 'ovn::controller' do
         end
       end
     end
+
+    context 'with ovn controller ssl' do
+      before :each do
+        params.merge!({
+          :ovn_controller_ssl_key     => 'key.pem',
+          :ovn_controller_ssl_cert    => 'cert.pem',
+          :ovn_controller_ssl_ca_cert => 'cacert.pem',
+        })
+      end
+
+      it 'creates systemd conf' do
+        is_expected.to contain_augeas('config-ovn-controller').with({
+          :context => platform_params[:ovn_controller_context],
+          :changes => "set " + platform_params[:ovn_controller_option_name] + " '\"" +
+                      "--ovn-controller-ssl-key=key.pem --ovn-controller-ssl-cert=cert.pem --ovn-controller-ssl-ca-cert=cacert.pem" +
+                      "\"'",
+        })
+      end
+    end
   end
 
   on_supported_os({
@@ -246,7 +272,9 @@ describe 'ovn::controller' do
             :ovn_controller_package_name    => 'ovn-host',
             :ovn_controller_service_name    => 'ovn-host',
             :ovn_controller_service_status  => false,
-            :ovn_controller_service_pattern => 'ovn-controller'
+            :ovn_controller_service_pattern => 'ovn-controller',
+            :ovn_controller_context         => '/files/etc/default/ovn-host',
+            :ovn_controller_option_name     => 'OVN_CTL_OPTS'
           }
         end
         it_behaves_like 'ovn controller'
@@ -256,7 +284,9 @@ describe 'ovn::controller' do
             :ovn_controller_package_name    => 'openvswitch-ovn-host',
             :ovn_controller_service_name    => 'ovn-controller',
             :ovn_controller_service_status  => true,
-            :ovn_controller_service_pattern => nil
+            :ovn_controller_service_pattern => nil,
+            :ovn_controller_context         => '/files/etc/sysconfig/ovn-controller',
+            :ovn_controller_option_name     => 'OVN_CONTROLLER_OPTS'
           }
         end
         it_behaves_like 'ovn controller'

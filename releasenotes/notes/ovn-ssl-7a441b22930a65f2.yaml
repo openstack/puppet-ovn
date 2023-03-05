@@ -1,0 +1,13 @@
+---
+features:
+  - |
+    The ``ovn::northd`` class now supports configuring ssl for OVN northbound
+    DB and OVN southbound DB.
+
+  - |
+    The ``ovn::controller`` class now supports configuring ssl certificates for
+    connection to OVN SB DB.
+
+  - |
+    Now this module supports configuring additional command line options of
+    ovn-northd and ovn-controller.

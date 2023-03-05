@@ -110,6 +110,22 @@
 #  install new ones.
 #  Defaults to 8000
 #
+# [*ovn_controller_ssl_key*]
+#   OVN Controller SSL private key file
+#   Defaults to undef
+#
+# [*ovn_controller_ssl_cert*]
+#   OVN Controller SSL certificate file
+#   Defaults to undef
+#
+# [*ovn_controller_ssl_ca_cert*]
+#   OVN Controller SSL CA certificate file
+#   Defaults to undef
+#
+# [*ovn_controller_extra_opts*]
+#   Additional command line options for ovn-controller service
+#   Defaults to []
+#
 class ovn::controller(
   $ovn_remote,
   $ovn_encap_ip,
@@ -131,7 +147,11 @@ class ovn::controller(
   $ovn_chassis_mac_map          = [],
   $ovn_monitor_all              = false,
   $manage_ovs_bridge            = true,
-  $ovn_ofctrl_wait_before_clear = 8000
+  $ovn_ofctrl_wait_before_clear = 8000,
+  $ovn_controller_ssl_key       = undef,
+  $ovn_controller_ssl_cert      = undef,
+  $ovn_controller_ssl_ca_cert   = undef,
+  $ovn_controller_extra_opts    = [],
 ) {
 
   include ovn::params
@@ -140,6 +160,7 @@ class ovn::controller(
   validate_legacy(String, 'validate_string', $ovn_remote)
   validate_legacy(String, 'validate_string', $ovn_encap_ip)
   validate_legacy(Boolean, 'validate_bool', $manage_ovs_bridge)
+  validate_legacy(Array, 'validate_array', $ovn_controller_extra_opts)
 
   if $enable_dpdk and ! $datapath_type {
     fail('Datapath type must be set when DPDK is enabled')
@@ -166,6 +187,27 @@ class ovn::controller(
     ensure => $package_ensure,
     notify => Service['controller'],
     name   => $::ovn::params::ovn_controller_package_name,
+  }
+
+  if $ovn_controller_ssl_key and $ovn_controller_ssl_cert and $ovn_controller_ssl_ca_cert {
+    $ovn_controller_ssl_opts = [
+      "--ovn-controller-ssl-key=${ovn_controller_ssl_key}",
+      "--ovn-controller-ssl-cert=${ovn_controller_ssl_cert}",
+      "--ovn-controller-ssl-ca-cert=${ovn_controller_ssl_ca_cert}"
+    ]
+  } elsif ! ($ovn_controller_ssl_key or $ovn_controller_ssl_cert or $ovn_controller_ssl_ca_cert) {
+    $ovn_controller_ssl_opts = []
+  } else {
+    fail('The ovn_controller_ssl_key, cert and ca_cert are required to use SSL.')
+  }
+
+  $ovn_controller_opts = join($ovn_controller_ssl_opts, ' ')
+
+  augeas { 'config-ovn-controller':
+    context => $::ovn::params::ovn_controller_context,
+    changes => "set ${$::ovn::params::ovn_controller_option_name} '\"${ovn_controller_opts}\"'",
+    require => Package[$::ovn::params::ovn_controller_package_name],
+    notify  => Service['controller'],
   }
 
   $config_items = {
