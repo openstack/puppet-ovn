@@ -212,7 +212,7 @@ class ovn::controller(
 
   $config_items = {
     'external_ids:ovn-remote'                   => { 'value' => $ovn_remote },
-    'external_ids:ovn-encap-type'               => { 'value' => $ovn_encap_type },
+    'external_ids:ovn-encap-type'               => { 'value' => join(any2array($ovn_encap_type), ',') },
     'external_ids:ovn-encap-ip'                 => { 'value' => $ovn_encap_ip },
     'external_ids:hostname'                     => { 'value' => $hostname },
     'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
