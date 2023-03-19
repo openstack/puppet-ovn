@@ -156,9 +156,12 @@ class ovn::controller(
 
   include ovn::params
 
-  validate_legacy(Boolean, 'validate_bool', $enable_dpdk)
   validate_legacy(String, 'validate_string', $ovn_remote)
   validate_legacy(String, 'validate_string', $ovn_encap_ip)
+  validate_legacy(Boolean, 'validate_bool', $enable_dpdk)
+  validate_legacy(Array, 'validate_array', $ovn_transport_zones)
+  validate_legacy(Boolean, 'validate_bool', $enable_ovn_match_northd)
+  validate_legacy(Boolean, 'validate_bool', $ovn_monitor_all)
   validate_legacy(Boolean, 'validate_bool', $manage_ovs_bridge)
   validate_legacy(Array, 'validate_array', $ovn_controller_extra_opts)
 
