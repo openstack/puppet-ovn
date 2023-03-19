@@ -68,27 +68,25 @@
 #   Defaults to []
 #
 class ovn::northd(
-  $package_ensure = 'present',
-  $dbs_listen_ip = '0.0.0.0',
-  $dbs_cluster_local_addr = undef,
-  $dbs_cluster_remote_addr = undef,
-  $ovn_northd_nb_db = undef,
-  $ovn_northd_sb_db = undef,
-  $ovn_northd_ssl_key = undef,
-  $ovn_northd_ssl_cert = undef,
-  $ovn_northd_ssl_ca_cert = undef,
-  $ovn_nb_db_ssl_key = undef,
-  $ovn_nb_db_ssl_cert = undef,
-  $ovn_nb_db_ssl_ca_cert = undef,
-  $ovn_sb_db_ssl_key = undef,
-  $ovn_sb_db_ssl_cert = undef,
-  $ovn_sb_db_ssl_ca_cert = undef,
-  $ovn_northd_extra_opts = [],
+  String $package_ensure = 'present',
+  String $dbs_listen_ip = '0.0.0.0',
+  Optional[String] $dbs_cluster_local_addr = undef,
+  Optional[String] $dbs_cluster_remote_addr = undef,
+  Optional[Variant[String, Array[String]]] $ovn_northd_nb_db = undef,
+  Optional[Variant[String, Array[String]]] $ovn_northd_sb_db = undef,
+  Optional[Stdlib::Absolutepath] $ovn_northd_ssl_key = undef,
+  Optional[Stdlib::Absolutepath] $ovn_northd_ssl_cert = undef,
+  Optional[Stdlib::Absolutepath] $ovn_northd_ssl_ca_cert = undef,
+  Optional[Stdlib::Absolutepath] $ovn_nb_db_ssl_key = undef,
+  Optional[Stdlib::Absolutepath] $ovn_nb_db_ssl_cert = undef,
+  Optional[Stdlib::Absolutepath] $ovn_nb_db_ssl_ca_cert = undef,
+  Optional[Stdlib::Absolutepath] $ovn_sb_db_ssl_key = undef,
+  Optional[Stdlib::Absolutepath] $ovn_sb_db_ssl_cert = undef,
+  Optional[Stdlib::Absolutepath] $ovn_sb_db_ssl_ca_cert = undef,
+  Array[String] $ovn_northd_extra_opts = [],
 ) {
   include ovn::params
   include vswitch::ovs
-
-  validate_legacy(Array, 'validate_array', $ovn_northd_extra_opts)
 
   $dbs_listen_ip_real = normalize_ip_for_uri($dbs_listen_ip)
 

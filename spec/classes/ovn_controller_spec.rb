@@ -240,9 +240,9 @@ describe 'ovn::controller' do
     context 'with ovn controller ssl' do
       before :each do
         params.merge!({
-          :ovn_controller_ssl_key     => 'key.pem',
-          :ovn_controller_ssl_cert    => 'cert.pem',
-          :ovn_controller_ssl_ca_cert => 'cacert.pem',
+          :ovn_controller_ssl_key     => '/path/to/key.pem',
+          :ovn_controller_ssl_cert    => '/path/to/cert.pem',
+          :ovn_controller_ssl_ca_cert => '/path/to/cacert.pem',
         })
       end
 
@@ -250,7 +250,7 @@ describe 'ovn::controller' do
         is_expected.to contain_augeas('config-ovn-controller').with({
           :context => platform_params[:ovn_controller_context],
           :changes => "set " + platform_params[:ovn_controller_option_name] + " '\"" +
-                      "--ovn-controller-ssl-key=key.pem --ovn-controller-ssl-cert=cert.pem --ovn-controller-ssl-ca-cert=cacert.pem" +
+                      "--ovn-controller-ssl-key=/path/to/key.pem --ovn-controller-ssl-cert=/path/to/cert.pem --ovn-controller-ssl-ca-cert=/path/to/cacert.pem" +
                       "\"'",
         })
       end

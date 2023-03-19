@@ -42,9 +42,9 @@ describe 'ovn::northd' do
         {
           :ovn_northd_nb_db       => 'ssl:192.0.2.1:6645,ssl:192.0.2.2:6645,ssl:192.0.2.3:6645',
           :ovn_northd_sb_db       => ['ssl:192.0.2.1:6646', 'ssl:192.0.2.2:6646', 'ssl:192.0.2.3:6646'],
-          :ovn_northd_ssl_key     => 'key.pem',
-          :ovn_northd_ssl_cert    => 'cert.pem',
-          :ovn_northd_ssl_ca_cert => 'cacert.pem',
+          :ovn_northd_ssl_key     => '/path/to/key.pem',
+          :ovn_northd_ssl_cert    => '/path/to/cert.pem',
+          :ovn_northd_ssl_ca_cert => '/path/to/cacert.pem',
         }
       end
 
@@ -56,7 +56,7 @@ describe 'ovn::northd' do
                       " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes" +
                       " --ovn-northd-nb-db=ssl:192.0.2.1:6645,ssl:192.0.2.2:6645,ssl:192.0.2.3:6645" +
                       " --ovn-northd-sb-db=ssl:192.0.2.1:6646,ssl:192.0.2.2:6646,ssl:192.0.2.3:6646" +
-                      " --ovn-northd-ssl-key=key.pem --ovn-northd-ssl-cert=cert.pem --ovn-northd-ssl-ca-cert=cacert.pem" +
+                      " --ovn-northd-ssl-key=/path/to/key.pem --ovn-northd-ssl-cert=/path/to/cert.pem --ovn-northd-ssl-ca-cert=/path/to/cacert.pem" +
                       "\"'",
         })
       end
@@ -69,9 +69,9 @@ describe 'ovn::northd' do
     context 'with nb db ssl enabled' do
       let :params do
         {
-          :ovn_nb_db_ssl_key     => 'dbkey.pem',
-          :ovn_nb_db_ssl_cert    => 'dbcert.pem',
-          :ovn_nb_db_ssl_ca_cert => 'dbcacert.pem',
+          :ovn_nb_db_ssl_key     => '/path/to/dbkey.pem',
+          :ovn_nb_db_ssl_cert    => '/path/to/dbcert.pem',
+          :ovn_nb_db_ssl_ca_cert => '/path/to/dbcacert.pem',
         }
       end
 
@@ -81,7 +81,7 @@ describe 'ovn::northd' do
           :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
                       "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
                       " --db-nb-create-insecure-remote=no --db-sb-create-insecure-remote=yes" +
-                      " --ovn-nb-db-ssl-key=dbkey.pem --ovn-nb-db-ssl-cert=dbcert.pem --ovn-nb-db-ssl-ca-cert=dbcacert.pem" +
+                      " --ovn-nb-db-ssl-key=/path/to/dbkey.pem --ovn-nb-db-ssl-cert=/path/to/dbcert.pem --ovn-nb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
                       "\"'",
         })
       end
@@ -101,9 +101,9 @@ describe 'ovn::northd' do
       let :params do
         {
           :dbs_listen_ip         => '::1',
-          :ovn_nb_db_ssl_key     => 'dbkey.pem',
-          :ovn_nb_db_ssl_cert    => 'dbcert.pem',
-          :ovn_nb_db_ssl_ca_cert => 'dbcacert.pem',
+          :ovn_nb_db_ssl_key     => '/path/to/dbkey.pem',
+          :ovn_nb_db_ssl_cert    => '/path/to/dbcert.pem',
+          :ovn_nb_db_ssl_ca_cert => '/path/to/dbcacert.pem',
         }
       end
 
@@ -113,7 +113,7 @@ describe 'ovn::northd' do
           :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
                       "--db-nb-addr=[::1] --db-sb-addr=[::1]" +
                       " --db-nb-create-insecure-remote=no --db-sb-create-insecure-remote=yes" +
-                      " --ovn-nb-db-ssl-key=dbkey.pem --ovn-nb-db-ssl-cert=dbcert.pem --ovn-nb-db-ssl-ca-cert=dbcacert.pem" +
+                      " --ovn-nb-db-ssl-key=/path/to/dbkey.pem --ovn-nb-db-ssl-cert=/path/to/dbcert.pem --ovn-nb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
                       "\"'",
         })
       end
@@ -132,9 +132,9 @@ describe 'ovn::northd' do
     context 'with sb db ssl enabled' do
       let :params do
         {
-          :ovn_sb_db_ssl_key     => 'dbkey.pem',
-          :ovn_sb_db_ssl_cert    => 'dbcert.pem',
-          :ovn_sb_db_ssl_ca_cert => 'dbcacert.pem',
+          :ovn_sb_db_ssl_key     => '/path/to/dbkey.pem',
+          :ovn_sb_db_ssl_cert    => '/path/to/dbcert.pem',
+          :ovn_sb_db_ssl_ca_cert => '/path/to/dbcacert.pem',
         }
       end
 
@@ -144,7 +144,7 @@ describe 'ovn::northd' do
           :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
                       "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
                       " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=no" +
-                      " --ovn-sb-db-ssl-key=dbkey.pem --ovn-sb-db-ssl-cert=dbcert.pem --ovn-sb-db-ssl-ca-cert=dbcacert.pem" +
+                      " --ovn-sb-db-ssl-key=/path/to/dbkey.pem --ovn-sb-db-ssl-cert=/path/to/dbcert.pem --ovn-sb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
                       "\"'",
         })
       end
@@ -164,9 +164,9 @@ describe 'ovn::northd' do
       let :params do
         {
           :dbs_listen_ip         => '::1',
-          :ovn_sb_db_ssl_key     => 'dbkey.pem',
-          :ovn_sb_db_ssl_cert    => 'dbcert.pem',
-          :ovn_sb_db_ssl_ca_cert => 'dbcacert.pem',
+          :ovn_sb_db_ssl_key     => '/path/to/dbkey.pem',
+          :ovn_sb_db_ssl_cert    => '/path/to/dbcert.pem',
+          :ovn_sb_db_ssl_ca_cert => '/path/to/dbcacert.pem',
         }
       end
 
@@ -176,7 +176,7 @@ describe 'ovn::northd' do
           :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
                       "--db-nb-addr=[::1] --db-sb-addr=[::1]" +
                       " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=no" +
-                      " --ovn-sb-db-ssl-key=dbkey.pem --ovn-sb-db-ssl-cert=dbcert.pem --ovn-sb-db-ssl-ca-cert=dbcacert.pem" +
+                      " --ovn-sb-db-ssl-key=/path/to/dbkey.pem --ovn-sb-db-ssl-cert=/path/to/dbcert.pem --ovn-sb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
                       "\"'",
         })
       end
@@ -195,7 +195,7 @@ describe 'ovn::northd' do
     context 'with bad northd ssl parameters' do
       let :params do
         {
-          :ovn_northd_ssl_key => 'key.pem',
+          :ovn_northd_ssl_key => '/path/to/key.pem',
         }
       end
 
@@ -205,7 +205,7 @@ describe 'ovn::northd' do
     context 'with bad nb db ssl parameters' do
       let :params do
         {
-          :ovn_nb_db_ssl_key => 'key.pem',
+          :ovn_nb_db_ssl_key => '/path/to/key.pem',
         }
       end
 
@@ -215,7 +215,7 @@ describe 'ovn::northd' do
     context 'with bad sb db ssl parameters' do
       let :params do
         {
-          :ovn_sb_db_ssl_key => 'key.pem',
+          :ovn_sb_db_ssl_key => '/path/to/key.pem',
         }
       end
 

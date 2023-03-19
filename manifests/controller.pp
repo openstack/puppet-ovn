@@ -127,43 +127,34 @@
 #   Defaults to []
 #
 class ovn::controller(
-  $ovn_remote,
-  $ovn_encap_ip,
-  $package_ensure               = 'present',
-  $ovn_encap_type               = 'geneve',
-  $ovn_encap_tos                = undef,
-  $ovn_bridge_mappings          = [],
-  $bridge_interface_mappings    = [],
-  $hostname                     = $facts['networking']['fqdn'],
-  $ovn_bridge                   = 'br-int',
-  $mac_table_size               = undef,
-  $datapath_type                = undef,
-  $enable_dpdk                  = false,
-  $ovn_cms_options              = undef,
-  $ovn_remote_probe_interval    = 60000,
-  $ovn_openflow_probe_interval  = 60,
-  $ovn_transport_zones          = [],
-  $enable_ovn_match_northd      = false,
-  $ovn_chassis_mac_map          = [],
-  $ovn_monitor_all              = false,
-  $manage_ovs_bridge            = true,
-  $ovn_ofctrl_wait_before_clear = 8000,
-  $ovn_controller_ssl_key       = undef,
-  $ovn_controller_ssl_cert      = undef,
-  $ovn_controller_ssl_ca_cert   = undef,
-  $ovn_controller_extra_opts    = [],
+  String $ovn_remote,
+  String $ovn_encap_ip,
+  String $package_ensure                                            = 'present',
+  Variant[String[1], Array[String[1]]] $ovn_encap_type              = 'geneve',
+  Optional[Variant[String, Integer]] $ovn_encap_tos                 = undef,
+  Variant[String[1], Array[String[1]]] $ovn_bridge_mappings         = [],
+  Array[String[1]] $bridge_interface_mappings                       = [],
+  String[1] $hostname                                               = $facts['networking']['fqdn'],
+  String[1] $ovn_bridge                                             = 'br-int',
+  Optional[Integer[0]] $mac_table_size                              = undef,
+  Optional[String[1]] $datapath_type                                = undef,
+  Boolean $enable_dpdk                                              = false,
+  Optional[Variant[String[1], Array[String[1]]]] $ovn_cms_options   = undef,
+  Integer[0] $ovn_remote_probe_interval                             = 60000,
+  Integer[0] $ovn_openflow_probe_interval                           = 60,
+  Array[String[1]] $ovn_transport_zones                                = [],
+  Boolean $enable_ovn_match_northd                                  = false,
+  Variant[Array[String], Hash[String, String]] $ovn_chassis_mac_map = [],
+  Boolean $ovn_monitor_all                                          = false,
+  Boolean $manage_ovs_bridge                                        = true,
+  Integer[0] $ovn_ofctrl_wait_before_clear                          = 8000,
+  Optional[Stdlib::Absolutepath] $ovn_controller_ssl_key            = undef,
+  Optional[Stdlib::Absolutepath] $ovn_controller_ssl_cert           = undef,
+  Optional[Stdlib::Absolutepath] $ovn_controller_ssl_ca_cert        = undef,
+  Array[String[1]] $ovn_controller_extra_opts                       = [],
 ) {
 
   include ovn::params
-
-  validate_legacy(String, 'validate_string', $ovn_remote)
-  validate_legacy(String, 'validate_string', $ovn_encap_ip)
-  validate_legacy(Boolean, 'validate_bool', $enable_dpdk)
-  validate_legacy(Array, 'validate_array', $ovn_transport_zones)
-  validate_legacy(Boolean, 'validate_bool', $enable_ovn_match_northd)
-  validate_legacy(Boolean, 'validate_bool', $ovn_monitor_all)
-  validate_legacy(Boolean, 'validate_bool', $manage_ovs_bridge)
-  validate_legacy(Array, 'validate_array', $ovn_controller_extra_opts)
 
   if $enable_dpdk and ! $datapath_type {
     fail('Datapath type must be set when DPDK is enabled')
