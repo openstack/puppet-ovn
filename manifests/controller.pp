@@ -249,7 +249,7 @@ Use the same parameter of vswitch::ovs or vswitch::dpdk')
 
   if !empty($ovn_bridge_mappings) {
     # For each provider bridge, set the mac table size.
-    $ovn_bridge_mappings.each |String $mappings| {
+    any2array($ovn_bridge_mappings).each |String $mappings| {
       $mapping = split($mappings, ':')
       $br = $mapping[1]
       if !empty($br) {
