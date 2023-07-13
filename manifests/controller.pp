@@ -204,7 +204,7 @@ class ovn::controller(
     fail('The ovn_controller_ssl_key, cert and ca_cert are required to use SSL.')
   }
 
-  $ovn_controller_opts = join($ovn_controller_ssl_opts, ' ')
+  $ovn_controller_opts = join($ovn_controller_ssl_opts + $ovn_controller_extra_opts, ' ')
 
   augeas { 'config-ovn-controller':
     context => $::ovn::params::ovn_controller_context,
