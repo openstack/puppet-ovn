@@ -11,7 +11,7 @@
 #  Defaults to undef
 #
 define ovn::controller::bridge(
-  $mac_table_size = undef,
+  Optional[Integer[0]] $mac_table_size = undef,
 ){
   $map_split = split($name, ':')
   $bridge    = $map_split[1]

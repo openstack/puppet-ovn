@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Now this module implements strict data type validations.
