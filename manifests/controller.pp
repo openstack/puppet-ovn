@@ -171,8 +171,6 @@ class ovn::controller(
   service { 'controller':
     ensure    => true,
     name      => $::ovn::params::ovn_controller_service_name,
-    hasstatus => $::ovn::params::ovn_controller_service_status,
-    pattern   => $::ovn::params::ovn_controller_service_pattern,
     enable    => true,
     subscribe => Vs_config['external_ids:ovn-remote']
   }

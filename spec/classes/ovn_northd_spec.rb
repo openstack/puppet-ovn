@@ -230,11 +230,9 @@ describe 'ovn::northd' do
 
     it 'starts northd' do
       is_expected.to contain_service('northd').with(
-        :ensure    => true,
-        :name      => platform_params[:ovn_northd_service_name],
-        :enable    => true,
-        :hasstatus => platform_params[:ovn_northd_service_status],
-        :pattern   => platform_params[:ovn_northd_service_pattern],
+        :ensure => true,
+        :name   => platform_params[:ovn_northd_service_name],
+        :enable => true,
       )
     end
 
@@ -259,12 +257,10 @@ describe 'ovn::northd' do
       when 'Debian'
         let(:platform_params) do
           {
-            :ovn_northd_package_name    => 'ovn-central',
-            :ovn_northd_service_name    => 'ovn-central',
-            :ovn_northd_service_status  => false,
-            :ovn_northd_service_pattern => 'ovn-northd',
-            :ovn_northd_context         => '/files/etc/default/ovn-central',
-            :ovn_northd_option_name     => 'OVN_CTL_OPTS'
+            :ovn_northd_package_name => 'ovn-central',
+            :ovn_northd_service_name => 'ovn-central',
+            :ovn_northd_context      => '/files/etc/default/ovn-central',
+            :ovn_northd_option_name  => 'OVN_CTL_OPTS'
           }
         end
         it_behaves_like 'ovn northd'
@@ -272,12 +268,10 @@ describe 'ovn::northd' do
       when 'RedHat'
         let(:platform_params) do
           {
-            :ovn_northd_package_name    => 'openvswitch-ovn-central',
-            :ovn_northd_service_name    => 'ovn-northd',
-            :ovn_northd_service_status  => true,
-            :ovn_northd_service_pattern => nil,
-            :ovn_northd_context         => '/files/etc/sysconfig/ovn-northd',
-            :ovn_northd_option_name     => 'OVN_NORTHD_OPTS'
+            :ovn_northd_package_name => 'openvswitch-ovn-central',
+            :ovn_northd_service_name => 'ovn-northd',
+            :ovn_northd_context      => '/files/etc/sysconfig/ovn-northd',
+            :ovn_northd_option_name  => 'OVN_NORTHD_OPTS'
           }
         end
         it_behaves_like 'ovn northd'

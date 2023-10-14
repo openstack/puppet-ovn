@@ -219,12 +219,10 @@ class ovn::northd(
   }
 
   service { 'northd':
-    ensure    => true,
-    enable    => true,
-    name      => $::ovn::params::ovn_northd_service_name,
-    hasstatus => $::ovn::params::ovn_northd_service_status,
-    pattern   => $::ovn::params::ovn_northd_service_pattern,
-    require   => Service['openvswitch']
+    ensure  => true,
+    enable  => true,
+    name    => $::ovn::params::ovn_northd_service_name,
+    require => Service['openvswitch']
   }
 
   package { $::ovn::params::ovn_northd_package_name:

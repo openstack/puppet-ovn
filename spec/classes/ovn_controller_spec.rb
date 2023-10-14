@@ -20,11 +20,9 @@ describe 'ovn::controller' do
 
     it 'starts controller' do
       is_expected.to contain_service('controller').with(
-        :ensure    => true,
-        :name      => platform_params[:ovn_controller_service_name],
-        :enable    => true,
-        :hasstatus => platform_params[:ovn_controller_service_status],
-        :pattern   => platform_params[:ovn_controller_service_pattern],
+        :ensure => true,
+        :name   => platform_params[:ovn_controller_service_name],
+        :enable => true,
         )
     end
 
@@ -269,24 +267,20 @@ describe 'ovn::controller' do
       when 'Debian'
         let :platform_params do
           {
-            :ovn_controller_package_name    => 'ovn-host',
-            :ovn_controller_service_name    => 'ovn-host',
-            :ovn_controller_service_status  => false,
-            :ovn_controller_service_pattern => 'ovn-controller',
-            :ovn_controller_context         => '/files/etc/default/ovn-host',
-            :ovn_controller_option_name     => 'OVN_CTL_OPTS'
+            :ovn_controller_package_name => 'ovn-host',
+            :ovn_controller_service_name => 'ovn-host',
+            :ovn_controller_context      => '/files/etc/default/ovn-host',
+            :ovn_controller_option_name  => 'OVN_CTL_OPTS'
           }
         end
         it_behaves_like 'ovn controller'
       when 'RedHat'
         let :platform_params do
           {
-            :ovn_controller_package_name    => 'openvswitch-ovn-host',
-            :ovn_controller_service_name    => 'ovn-controller',
-            :ovn_controller_service_status  => true,
-            :ovn_controller_service_pattern => nil,
-            :ovn_controller_context         => '/files/etc/sysconfig/ovn-controller',
-            :ovn_controller_option_name     => 'OVN_CONTROLLER_OPTS'
+            :ovn_controller_package_name => 'openvswitch-ovn-host',
+            :ovn_controller_service_name => 'ovn-controller',
+            :ovn_controller_context      => '/files/etc/sysconfig/ovn-controller',
+            :ovn_controller_option_name  => 'OVN_CONTROLLER_OPTS'
           }
         end
         it_behaves_like 'ovn controller'
