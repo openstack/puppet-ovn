@@ -5,6 +5,19 @@
 #
 # === Parameters:
 #
+# [*package_name*]
+#   (required) Name of ovn-controller package.
+#
+# [*service_name*]
+#   (required) Name of ovn-controller service.
+#
+# [*config_file_path*]
+#   (required) File path of the ovn-controller config file
+#
+# [*config_option_name*]
+#   (required) Name of the environment variable to customize options to launch
+#   the ovn-controller service.
+#
 # [*ovn_remote*]
 #   (Required) URL of the remote ovn southbound db.
 #   Example: 'tcp:127.0.0.1:6642'
@@ -127,6 +140,10 @@
 #   Defaults to []
 #
 class ovn::controller(
+  String[1] $service_name,
+  String[1] $package_name,
+  Stdlib::Absolutepath $config_file_path,
+  String[1] $config_option_name,
   String $ovn_remote,
   String $ovn_encap_ip,
   String $package_ensure                                            = 'present',
@@ -154,8 +171,6 @@ class ovn::controller(
   Array[String[1]] $ovn_controller_extra_opts                       = [],
 ) {
 
-  include ovn::params
-
   if $enable_dpdk and ! $datapath_type {
     fail('Datapath type must be set when DPDK is enabled')
   }
@@ -170,15 +185,17 @@ class ovn::controller(
 
   service { 'controller':
     ensure    => true,
-    name      => $::ovn::params::ovn_controller_service_name,
+    name      => $service_name,
     enable    => true,
-    subscribe => Vs_config['external_ids:ovn-remote']
+    subscribe => Vs_config['external_ids:ovn-remote'],
+    tag       => 'ovn',
   }
 
-  package { $::ovn::params::ovn_controller_package_name:
+  package { 'ovn-controller':
     ensure => $package_ensure,
     notify => Service['controller'],
-    name   => $::ovn::params::ovn_controller_package_name,
+    name   => $package_name,
+    tag    => 'ovn',
   }
 
   if $ovn_controller_ssl_key and $ovn_controller_ssl_cert and $ovn_controller_ssl_ca_cert {
@@ -196,9 +213,9 @@ class ovn::controller(
   $ovn_controller_opts = join($ovn_controller_ssl_opts + $ovn_controller_extra_opts, ' ')
 
   augeas { 'config-ovn-controller':
-    context => $::ovn::params::ovn_controller_context,
-    changes => "set ${$::ovn::params::ovn_controller_option_name} '\"${ovn_controller_opts}\"'",
-    require => Package[$::ovn::params::ovn_controller_package_name],
+    context => "/files${config_file_path}",
+    changes => "set ${config_option_name} '\"${ovn_controller_opts}\"'",
+    require => Package['ovn-controller'],
     notify  => Service['controller'],
   }
 

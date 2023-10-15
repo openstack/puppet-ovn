@@ -10,10 +10,6 @@ describe 'ovn::controller' do
   end
 
   shared_examples_for 'ovn controller' do
-    it 'includes params' do
-      is_expected.to contain_class('ovn::params')
-    end
-
     it 'includes controller' do
       is_expected.to contain_class('ovn::controller')
     end
@@ -27,7 +23,7 @@ describe 'ovn::controller' do
     end
 
     it 'installs controller package' do
-      is_expected.to contain_package(platform_params[:ovn_controller_package_name]).with(
+      is_expected.to contain_package('ovn-controller').with(
         :ensure => 'present',
         :name   => platform_params[:ovn_controller_package_name],
         :notify => 'Service[controller]'
