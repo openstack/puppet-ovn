@@ -7,6 +7,7 @@ describe 'basic ovn deployment' do
     include openstack_integration
     include openstack_integration::repos
 
+    include openstack_integration::ovs
     include openstack_integration::ovn
     EOS
 
