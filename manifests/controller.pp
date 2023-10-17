@@ -132,7 +132,7 @@ class ovn::controller(
   String $package_ensure                                            = 'present',
   Variant[String[1], Array[String[1]]] $ovn_encap_type              = 'geneve',
   Optional[Variant[String, Integer]] $ovn_encap_tos                 = undef,
-  Variant[String[1], Array[String[1]]] $ovn_bridge_mappings         = [],
+  Ovn::BridgeMappings $ovn_bridge_mappings                          = [],
   Array[String[1]] $bridge_interface_mappings                       = [],
   String[1] $hostname                                               = $facts['networking']['fqdn'],
   String[1] $ovn_bridge                                             = 'br-int',
@@ -253,12 +253,19 @@ class ovn::controller(
   }
 
   if !empty($ovn_bridge_mappings) {
+
+    $ovn_bridge_mappings_real = $ovn_bridge_mappings ? {
+      Hash    => join_keys_to_values($ovn_bridge_mappings, ':'),
+      String  => $ovn_bridge_mappings.split(',').strip(),
+      default => $ovn_bridge_mappings,
+    }
+
     $bridge_items = {
-      'external_ids:ovn-bridge-mappings' => { 'value' => join(any2array($ovn_bridge_mappings), ',') }
+      'external_ids:ovn-bridge-mappings' => { 'value' => join(any2array($ovn_bridge_mappings_real), ',') }
     }
 
     if $manage_ovs_bridge {
-      ovn::controller::bridge { $ovn_bridge_mappings:
+      ovn::controller::bridge { $ovn_bridge_mappings_real:
         mac_table_size => $mac_table_size,
         before         => Service['controller'],
         require        => Service['openvswitch']
