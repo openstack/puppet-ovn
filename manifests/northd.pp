@@ -3,8 +3,21 @@
 #
 # installs ovn package starts the ovn-northd service
 #
+# [*package_name*]
+#   (required) Name of ovn-northd package.
+#
+# [*service_name*]
+#   (required) Name of ovn-northd service.
+#
+# [*config_file_path*]
+#   (required) File path of the ovn-controller config file
+#
+# [*config_option_name*]
+#   (required) Name of the environment variable to customize options to launch
+#   the ovn-controller service.
+#
 # [*package_ensure*]
-#   (Optional) State of the openvswitch package
+#   (Optional) State of the ovn-northd package
 #   Defaults to 'present'.
 #
 # [*dbs_listen_ip*]
@@ -68,6 +81,10 @@
 #   Defaults to []
 #
 class ovn::northd(
+  String[1] $package_name,
+  String[1] $service_name,
+  Stdlib::Absolutepath $config_file_path,
+  String[1] $config_option_name,
   String $package_ensure = 'present',
   String $dbs_listen_ip = '0.0.0.0',
   Optional[String] $dbs_cluster_local_addr = undef,
@@ -85,7 +102,6 @@ class ovn::northd(
   Optional[Stdlib::Absolutepath] $ovn_sb_db_ssl_ca_cert = undef,
   Array[String] $ovn_northd_extra_opts = [],
 ) {
-  include ovn::params
   include vswitch::ovs
 
   $dbs_listen_ip_real = normalize_ip_for_uri($dbs_listen_ip)
@@ -212,24 +228,26 @@ class ovn::northd(
                           ' ')
 
   augeas { 'config-ovn-northd':
-    context => $::ovn::params::ovn_northd_context,
-    changes => "set ${$::ovn::params::ovn_northd_option_name} '\"${ovn_northd_opts}\"'",
-    require => Package[$::ovn::params::ovn_northd_package_name],
+    context => "/files${config_file_path}",
+    changes => "set ${config_option_name} '\"${ovn_northd_opts}\"'",
+    require => Package['ovn-northd'],
     before  => Service['northd'],
   }
 
   service { 'northd':
     ensure  => true,
     enable  => true,
-    name    => $::ovn::params::ovn_northd_service_name,
-    require => Service['openvswitch']
+    name    => $service_name,
+    require => Service['openvswitch'],
+    tag     => 'ovn',
   }
 
-  package { $::ovn::params::ovn_northd_package_name:
+  package { 'ovn-northd':
     ensure  => $package_ensure,
-    name    => $::ovn::params::ovn_northd_package_name,
+    name    => $package_name,
     notify  => Service['northd'],
-    require => Package[$::vswitch::params::ovs_package_name]
+    require => Package['openvswitch'],
+    tag     => 'ovn',
   }
 
   # NOTE(tkajinam): We have to escapte [ and ] otherwise egrep intereprets

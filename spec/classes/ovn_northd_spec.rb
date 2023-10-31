@@ -224,10 +224,6 @@ describe 'ovn::northd' do
   end
 
   shared_examples_for 'ovn northd' do
-    it 'includes params' do
-      is_expected.to contain_class('ovn::params')
-    end
-
     it 'starts northd' do
       is_expected.to contain_service('northd').with(
         :ensure => true,
@@ -237,7 +233,7 @@ describe 'ovn::northd' do
     end
 
     it 'installs package' do
-      is_expected.to contain_package(platform_params[:ovn_northd_package_name]).with(
+      is_expected.to contain_package('ovn-northd').with(
         :ensure => 'present',
         :name   => platform_params[:ovn_northd_package_name],
         :notify => 'Service[northd]'
