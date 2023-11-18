@@ -11,10 +11,10 @@
 # [*service_name*]
 #   (required) Name of ovn-controller service.
 #
-# [*config_file_path*]
-#   (required) File path of the ovn-controller config file
+# [*environment_file_path*]
+#   (required) File path of the ovn-controller environment file
 #
-# [*config_option_name*]
+# [*opts_envvar_name*]
 #   (required) Name of the environment variable to customize options to launch
 #   the ovn-controller service.
 #
@@ -142,8 +142,8 @@
 class ovn::controller(
   String[1] $service_name,
   String[1] $package_name,
-  Stdlib::Absolutepath $config_file_path,
-  String[1] $config_option_name,
+  Stdlib::Absolutepath $environment_file_path,
+  String[1] $opts_envvar_name,
   String $ovn_remote,
   String $ovn_encap_ip,
   String $package_ensure                                            = 'present',
@@ -213,8 +213,8 @@ class ovn::controller(
   $ovn_controller_opts = join($ovn_controller_ssl_opts + $ovn_controller_extra_opts, ' ')
 
   augeas { 'config-ovn-controller':
-    context => "/files${config_file_path}",
-    changes => "set ${config_option_name} '\"${ovn_controller_opts}\"'",
+    context => "/files${environment_file_path}",
+    changes => "set ${opts_envvar_name} '\"${ovn_controller_opts}\"'",
     require => Package['ovn-controller'],
     notify  => Service['controller'],
   }

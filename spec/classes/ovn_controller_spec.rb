@@ -33,7 +33,7 @@ describe 'ovn::controller' do
     it 'creates systemd conf' do
       is_expected.to contain_augeas('config-ovn-controller').with({
         :context => platform_params[:ovn_controller_context],
-        :changes => "set " + platform_params[:ovn_controller_option_name] + " '\"\"'",
+        :changes => "set " + platform_params[:ovn_controller_opts_envvar_name] + " '\"\"'",
       })
     end
 
@@ -243,7 +243,7 @@ describe 'ovn::controller' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-controller').with({
           :context => platform_params[:ovn_controller_context],
-          :changes => "set " + platform_params[:ovn_controller_option_name] + " '\"" +
+          :changes => "set " + platform_params[:ovn_controller_opts_envvar_name] + " '\"" +
                       "--ovn-controller-ssl-key=/path/to/key.pem --ovn-controller-ssl-cert=/path/to/cert.pem --ovn-controller-ssl-ca-cert=/path/to/cacert.pem" +
                       "\"'",
         })
@@ -263,20 +263,20 @@ describe 'ovn::controller' do
       when 'Debian'
         let :platform_params do
           {
-            :ovn_controller_package_name => 'ovn-host',
-            :ovn_controller_service_name => 'ovn-host',
-            :ovn_controller_context      => '/files/etc/default/ovn-host',
-            :ovn_controller_option_name  => 'OVN_CTL_OPTS'
+            :ovn_controller_package_name     => 'ovn-host',
+            :ovn_controller_service_name     => 'ovn-host',
+            :ovn_controller_context          => '/files/etc/default/ovn-host',
+            :ovn_controller_opts_envvar_name => 'OVN_CTL_OPTS'
           }
         end
         it_behaves_like 'ovn controller'
       when 'RedHat'
         let :platform_params do
           {
-            :ovn_controller_package_name => 'openvswitch-ovn-host',
-            :ovn_controller_service_name => 'ovn-controller',
-            :ovn_controller_context      => '/files/etc/sysconfig/ovn-controller',
-            :ovn_controller_option_name  => 'OVN_CONTROLLER_OPTS'
+            :ovn_controller_package_name     => 'openvswitch-ovn-host',
+            :ovn_controller_service_name     => 'ovn-controller',
+            :ovn_controller_context          => '/files/etc/sysconfig/ovn-controller',
+            :ovn_controller_opts_envvar_name => 'OVN_CONTROLLER_OPTS'
           }
         end
         it_behaves_like 'ovn controller'

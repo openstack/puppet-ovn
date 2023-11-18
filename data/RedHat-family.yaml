@@ -1,9 +1,9 @@
 ---
 ovn::controller::package_name: 'openvswitch-ovn-host'
 ovn::controller::service_name: 'ovn-controller'
-ovn::controller::config_file_path: '/etc/sysconfig/ovn-controller'
-ovn::controller::config_option_name: 'OVN_CONTROLLER_OPTS'
+ovn::controller::environment_file_path: '/etc/sysconfig/ovn-controller'
+ovn::controller::opts_envvar_name: 'OVN_CONTROLLER_OPTS'
 ovn::northd::package_name: 'openvswitch-ovn-central'
 ovn::northd::service_name: 'ovn-northd'
-ovn::northd::config_file_path: '/etc/sysconfig/ovn-northd'
-ovn::northd::config_option_name: 'OVN_NORTHD_OPTS'
+ovn::northd::environment_file_path: '/etc/sysconfig/ovn-northd'
+ovn::northd::opts_envvar_name: 'OVN_NORTHD_OPTS'

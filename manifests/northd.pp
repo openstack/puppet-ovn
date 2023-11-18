@@ -9,10 +9,10 @@
 # [*service_name*]
 #   (required) Name of ovn-northd service.
 #
-# [*config_file_path*]
-#   (required) File path of the ovn-controller config file
+# [*environment_file_path*]
+#   (required) File path of the ovn-controller environment file
 #
-# [*config_option_name*]
+# [*opts_envvar_name*]
 #   (required) Name of the environment variable to customize options to launch
 #   the ovn-controller service.
 #
@@ -83,8 +83,8 @@
 class ovn::northd(
   String[1] $package_name,
   String[1] $service_name,
-  Stdlib::Absolutepath $config_file_path,
-  String[1] $config_option_name,
+  Stdlib::Absolutepath $environment_file_path,
+  String[1] $opts_envvar_name,
   String $package_ensure = 'present',
   String $dbs_listen_ip = '0.0.0.0',
   Optional[String] $dbs_cluster_local_addr = undef,
@@ -228,8 +228,8 @@ class ovn::northd(
                           ' ')
 
   augeas { 'config-ovn-northd':
-    context => "/files${config_file_path}",
-    changes => "set ${config_option_name} '\"${ovn_northd_opts}\"'",
+    context => "/files${environment_file_path}",
+    changes => "set ${opts_envvar_name} '\"${ovn_northd_opts}\"'",
     require => Package['ovn-northd'],
     before  => Service['northd'],
   }

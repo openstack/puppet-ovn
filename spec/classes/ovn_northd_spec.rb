@@ -10,7 +10,7 @@ describe 'ovn::northd' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-northd').with({
           :context => platform_params[:ovn_northd_context],
-          :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
                       "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
                       " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes" +
                       "\"'",
@@ -31,7 +31,7 @@ describe 'ovn::northd' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-northd').with({
           :context => platform_params[:ovn_northd_context],
-          :changes => "set " + platform_params[:ovn_northd_option_name] +
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] +
                       " '\"--db-nb-addr=[::1] --db-sb-addr=[::1] --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
         })
       end
@@ -51,7 +51,7 @@ describe 'ovn::northd' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-northd').with({
           :context => platform_params[:ovn_northd_context],
-          :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
                       "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
                       " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes" +
                       " --ovn-northd-nb-db=ssl:192.0.2.1:6645,ssl:192.0.2.2:6645,ssl:192.0.2.3:6645" +
@@ -78,7 +78,7 @@ describe 'ovn::northd' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-northd').with({
           :context => platform_params[:ovn_northd_context],
-          :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
                       "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
                       " --db-nb-create-insecure-remote=no --db-sb-create-insecure-remote=yes" +
                       " --ovn-nb-db-ssl-key=/path/to/dbkey.pem --ovn-nb-db-ssl-cert=/path/to/dbcert.pem --ovn-nb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
@@ -110,7 +110,7 @@ describe 'ovn::northd' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-northd').with({
           :context => platform_params[:ovn_northd_context],
-          :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
                       "--db-nb-addr=[::1] --db-sb-addr=[::1]" +
                       " --db-nb-create-insecure-remote=no --db-sb-create-insecure-remote=yes" +
                       " --ovn-nb-db-ssl-key=/path/to/dbkey.pem --ovn-nb-db-ssl-cert=/path/to/dbcert.pem --ovn-nb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
@@ -141,7 +141,7 @@ describe 'ovn::northd' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-northd').with({
           :context => platform_params[:ovn_northd_context],
-          :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
                       "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
                       " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=no" +
                       " --ovn-sb-db-ssl-key=/path/to/dbkey.pem --ovn-sb-db-ssl-cert=/path/to/dbcert.pem --ovn-sb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
@@ -173,7 +173,7 @@ describe 'ovn::northd' do
       it 'creates systemd conf' do
         is_expected.to contain_augeas('config-ovn-northd').with({
           :context => platform_params[:ovn_northd_context],
-          :changes => "set " + platform_params[:ovn_northd_option_name] + " '\"" +
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
                       "--db-nb-addr=[::1] --db-sb-addr=[::1]" +
                       " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=no" +
                       " --ovn-sb-db-ssl-key=/path/to/dbkey.pem --ovn-sb-db-ssl-cert=/path/to/dbcert.pem --ovn-sb-db-ssl-ca-cert=/path/to/dbcacert.pem" +
@@ -253,10 +253,10 @@ describe 'ovn::northd' do
       when 'Debian'
         let(:platform_params) do
           {
-            :ovn_northd_package_name => 'ovn-central',
-            :ovn_northd_service_name => 'ovn-central',
-            :ovn_northd_context      => '/files/etc/default/ovn-central',
-            :ovn_northd_option_name  => 'OVN_CTL_OPTS'
+            :ovn_northd_package_name     => 'ovn-central',
+            :ovn_northd_service_name     => 'ovn-central',
+            :ovn_northd_context          => '/files/etc/default/ovn-central',
+            :ovn_northd_opts_envvar_name => 'OVN_CTL_OPTS'
           }
         end
         it_behaves_like 'ovn northd'
@@ -264,10 +264,10 @@ describe 'ovn::northd' do
       when 'RedHat'
         let(:platform_params) do
           {
-            :ovn_northd_package_name => 'openvswitch-ovn-central',
-            :ovn_northd_service_name => 'ovn-northd',
-            :ovn_northd_context      => '/files/etc/sysconfig/ovn-northd',
-            :ovn_northd_option_name  => 'OVN_NORTHD_OPTS'
+            :ovn_northd_package_name     => 'openvswitch-ovn-central',
+            :ovn_northd_service_name     => 'ovn-northd',
+            :ovn_northd_context          => '/files/etc/sysconfig/ovn-northd',
+            :ovn_northd_opts_envvar_name => 'OVN_NORTHD_OPTS'
           }
         end
         it_behaves_like 'ovn northd'

@@ -1,9 +1,9 @@
 ---
 ovn::controller::package_name: 'ovn-host'
 ovn::controller::service_name: 'ovn-host'
-ovn::controller::config_file_path: '/etc/default/ovn-host'
-ovn::controller::config_option_name: 'OVN_CTL_OPTS'
+ovn::controller::environment_file_path: '/etc/default/ovn-host'
+ovn::controller::opts_envvar_name: 'OVN_CTL_OPTS'
 ovn::northd::package_name: 'ovn-central'
 ovn::northd::service_name: 'ovn-central'
-ovn::northd::config_file_path: '/etc/default/ovn-central'
-ovn::northd::config_option_name: 'OVN_CTL_OPTS'
+ovn::northd::environment_file_path: '/etc/default/ovn-central'
+ovn::northd::opts_envvar_name: 'OVN_CTL_OPTS'
