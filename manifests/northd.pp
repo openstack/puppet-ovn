@@ -163,15 +163,13 @@ class ovn::northd(
   $ovn_northd_nb_db_opts = $ovn_northd_nb_db ? {
     String        => ["--ovn-northd-nb-db=${ovn_northd_nb_db}"],
     Array[String] => ["--ovn-northd-nb-db=${join($ovn_northd_nb_db, ',')}"],
-    undef         => [],
-    default       => fail('ovn_northd_nb_db_opts must be of type String or Array[String]'),
+    default       => [],
   }
 
   $ovn_northd_sb_db_opts = $ovn_northd_sb_db ? {
     String        => ["--ovn-northd-sb-db=${ovn_northd_sb_db}"],
     Array[String] => ["--ovn-northd-sb-db=${join($ovn_northd_sb_db, ',')}"],
-    undef         => [],
-    default       => fail('ovn_northd_sb_db_opts must be of type String or Array[String]'),
+    default       => [],
   }
 
   if $ovn_northd_ssl_key and $ovn_northd_ssl_cert and $ovn_northd_ssl_ca_cert {
