@@ -76,6 +76,14 @@
 #   OVN SB DB SSL CA certificate file
 #   Defaults to undef
 #
+# [*ovn_nb_db_inactivity_probe*]
+#   Inactivity probe for OVN NB DB connections
+#   Defaults to undef
+#
+# [*ovn_sb_db_inactivity_probe*]
+#   Inactivity probe for OVN SB DB connections
+#   Defaults to undef
+#
 # [*ovn_northd_extra_opts*]
 #   Additional command line options for ovn-northd service
 #   Defaults to []
@@ -100,6 +108,8 @@ class ovn::northd(
   Optional[Stdlib::Absolutepath] $ovn_sb_db_ssl_key = undef,
   Optional[Stdlib::Absolutepath] $ovn_sb_db_ssl_cert = undef,
   Optional[Stdlib::Absolutepath] $ovn_sb_db_ssl_ca_cert = undef,
+  Optional[Integer[0]] $ovn_nb_db_inactivity_probe = undef,
+  Optional[Integer[0]] $ovn_sb_db_inactivity_probe = undef,
   Array[String] $ovn_northd_extra_opts = [],
 ) {
   include vswitch::ovs
@@ -252,22 +262,46 @@ class ovn::northd(
   #                 these wrongly.
   $dbs_listen_ip_reg = regsubst(regsubst($dbs_listen_ip_real, '\]$', '\\]'), '^\[', '\\[')
 
-  if $ovn_nb_db_ssl_key {
-    exec { 'ovn-nb-set-connection':
-      command => "ovn-nbctl set-connection pssl:6641:${dbs_listen_ip_real}",
+  $nb_protocol = $ovn_nb_db_ssl_key ? {
+    undef   => 'tcp',
+    default => 'ssl'
+  }
+  exec { 'ovn-nb-set-connection':
+    command => ['ovn-nbctl', 'set-connection', "p${nb_protocol}:6641:${dbs_listen_ip_real}"],
+    path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+    unless  => "ovn-nbctl get-connection | egrep -e '^p${nb_protocol}:6641:${dbs_listen_ip_reg}$'",
+    tag     => 'ovn-db-set-connections',
+    require => Service['northd']
+  }
+
+  $sb_protocol = $ovn_sb_db_ssl_key ? {
+    undef   => 'tcp',
+    default => 'ssl'
+  }
+  exec { 'ovn-sb-set-connection':
+    command => ['ovn-sbctl', 'set-connection', "p${sb_protocol}:6642:${dbs_listen_ip_real}"],
+    path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+    unless  => "ovn-sbctl get-connection | egrep -e ' p${sb_protocol}:6642:${dbs_listen_ip_reg}$'",
+    tag     => 'ovn-db-set-connections',
+    require => Service['northd']
+  }
+
+  if $ovn_nb_db_inactivity_probe {
+    exec { 'ovn-nb-set-inactivity-probe':
+      command => ['ovn-nbctl', 'set', 'connection', '.', "inactivity_probe=${ovn_nb_db_inactivity_probe}"],
       path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
-      unless  => "ovn-nbctl get-connection | egrep -e '^pssl:6641:${dbs_listen_ip_reg}$'",
-      tag     => 'ovn-db-set-connections',
-      require => Service['northd']
+      unless  => "test \"$(sudo ovn-nbctl get connection . inactivity_probe)\" = \"${ovn_nb_db_inactivity_probe}\"",
+      tag     => 'ovn-db-set-inactivity-probe',
+      require => Exec['ovn-nb-set-connection'],
     }
   }
-  if $ovn_sb_db_ssl_key {
-    exec { 'ovn-sb-set-connection':
-      command => "ovn-sbctl set-connection pssl:6642:${dbs_listen_ip_real}",
+  if $ovn_sb_db_inactivity_probe {
+    exec { 'ovn-sb-set-inactivity-probe':
+      command => ['ovn-sbctl', 'set', 'connection', '.', "inactivity_probe=${ovn_sb_db_inactivity_probe}"],
       path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
-      unless  => "ovn-sbctl get-connection | egrep -e ' pssl:6642:${dbs_listen_ip_reg}$'",
-      tag     => 'ovn-db-set-connections',
-      require => Service['northd']
+      unless  => "test \"$(sudo ovn-sbctl get connection . inactivity_probe)\" = \"${ovn_sb_db_inactivity_probe}\"",
+      tag     => 'ovn-db-set-inactivity-probe',
+      require => Exec['ovn-sb-set-connection'],
     }
   }
 }

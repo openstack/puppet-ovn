@@ -16,9 +16,19 @@ describe 'ovn::northd' do
                       "\"'",
         })
       end
-      it 'does not configure db connections' do
-        is_expected.to_not contain_exec('ovn-nb-set-connection')
-        is_expected.to_not contain_exec('ovn-sb-set-connection')
+      it 'configures db connections' do
+        is_expected.to contain_exec('ovn-nb-set-connection').with({
+          :command => ['ovn-nbctl', 'set-connection', 'ptcp:6641:0.0.0.0'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-nbctl get-connection | egrep -e \'^ptcp:6641:0.0.0.0$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
+        is_expected.to contain_exec('ovn-sb-set-connection').with({
+          :command => ['ovn-sbctl', 'set-connection', 'ptcp:6642:0.0.0.0'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-sbctl get-connection | egrep -e \' ptcp:6642:0.0.0.0$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
       end
     end
 
@@ -33,6 +43,20 @@ describe 'ovn::northd' do
           :context => platform_params[:ovn_northd_context],
           :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] +
                       " '\"--db-nb-addr=[::1] --db-sb-addr=[::1] --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes\"'",
+        })
+      end
+      it 'configures db connections' do
+        is_expected.to contain_exec('ovn-nb-set-connection').with({
+          :command => ['ovn-nbctl', 'set-connection', 'ptcp:6641:[::1]'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-nbctl get-connection | egrep -e \'^ptcp:6641:\\[::1\\]$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
+        is_expected.to contain_exec('ovn-sb-set-connection').with({
+          :command => ['ovn-sbctl', 'set-connection', 'ptcp:6642:[::1]'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-sbctl get-connection | egrep -e \' ptcp:6642:\\[::1\\]$\'',
+          :tag     => 'ovn-db-set-connections',
         })
       end
     end
@@ -60,9 +84,19 @@ describe 'ovn::northd' do
                       "\"'",
         })
       end
-      it 'does not configures db connections' do
-        is_expected.to_not contain_exec('ovn-nb-set-connection')
-        is_expected.to_not contain_exec('ovn-sb-set-connection')
+      it 'configures db connections' do
+        is_expected.to contain_exec('ovn-nb-set-connection').with({
+          :command => ['ovn-nbctl', 'set-connection', 'ptcp:6641:0.0.0.0'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-nbctl get-connection | egrep -e \'^ptcp:6641:0.0.0.0$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
+        is_expected.to contain_exec('ovn-sb-set-connection').with({
+          :command => ['ovn-sbctl', 'set-connection', 'ptcp:6642:0.0.0.0'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-sbctl get-connection | egrep -e \' ptcp:6642:0.0.0.0$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
       end
     end
 
@@ -85,15 +119,19 @@ describe 'ovn::northd' do
                       "\"'",
         })
       end
-
       it 'configures db connections' do
         is_expected.to contain_exec('ovn-nb-set-connection').with({
-          :command => 'ovn-nbctl set-connection pssl:6641:0.0.0.0',
+          :command => ['ovn-nbctl', 'set-connection', 'pssl:6641:0.0.0.0'],
           :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
           :unless  => 'ovn-nbctl get-connection | egrep -e \'^pssl:6641:0.0.0.0$\'',
           :tag     => 'ovn-db-set-connections',
         })
-        is_expected.to_not contain_exec('ovn-sb-set-connection')
+        is_expected.to contain_exec('ovn-sb-set-connection').with({
+          :command => ['ovn-sbctl', 'set-connection', 'ptcp:6642:0.0.0.0'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-sbctl get-connection | egrep -e \' ptcp:6642:0.0.0.0$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
       end
     end
 
@@ -117,15 +155,19 @@ describe 'ovn::northd' do
                       "\"'",
         })
       end
-
       it 'configures db connections' do
         is_expected.to contain_exec('ovn-nb-set-connection').with({
-          :command => 'ovn-nbctl set-connection pssl:6641:[::1]',
+          :command => ['ovn-nbctl', 'set-connection', 'pssl:6641:[::1]'],
           :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
           :unless  => 'ovn-nbctl get-connection | egrep -e \'^pssl:6641:\\[::1\\]$\'',
           :tag     => 'ovn-db-set-connections',
         })
-        is_expected.to_not contain_exec('ovn-sb-set-connection')
+        is_expected.to contain_exec('ovn-sb-set-connection').with({
+          :command => ['ovn-sbctl', 'set-connection', 'ptcp:6642:[::1]'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-sbctl get-connection | egrep -e \' ptcp:6642:\\[::1\\]$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
       end
     end
 
@@ -148,11 +190,15 @@ describe 'ovn::northd' do
                       "\"'",
         })
       end
-
       it 'configures db connections' do
-        is_expected.to_not contain_exec('ovn-nb-set-connection')
+        is_expected.to contain_exec('ovn-nb-set-connection').with({
+          :command => ['ovn-nbctl', 'set-connection', 'ptcp:6641:0.0.0.0'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-nbctl get-connection | egrep -e \'^ptcp:6641:0.0.0.0$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
         is_expected.to contain_exec('ovn-sb-set-connection').with({
-          :command => 'ovn-sbctl set-connection pssl:6642:0.0.0.0',
+          :command => ['ovn-sbctl', 'set-connection', 'pssl:6642:0.0.0.0'],
           :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
           :unless  => 'ovn-sbctl get-connection | egrep -e \' pssl:6642:0.0.0.0$\'',
           :tag     => 'ovn-db-set-connections',
@@ -180,11 +226,15 @@ describe 'ovn::northd' do
                       "\"'",
         })
       end
-
       it 'configures db connections' do
-        is_expected.to_not contain_exec('ovn-nb-set-connection')
+        is_expected.to contain_exec('ovn-nb-set-connection').with({
+          :command => ['ovn-nbctl', 'set-connection', 'ptcp:6641:[::1]'],
+          :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :unless  => 'ovn-nbctl get-connection | egrep -e \'^ptcp:6641:\\[::1\\]$\'',
+          :tag     => 'ovn-db-set-connections',
+        })
         is_expected.to contain_exec('ovn-sb-set-connection').with({
-          :command => 'ovn-sbctl set-connection pssl:6642:[::1]',
+          :command => ['ovn-sbctl', 'set-connection', 'pssl:6642:[::1]'],
           :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
           :unless  => 'ovn-sbctl get-connection | egrep -e \' pssl:6642:\\[::1\\]$\'',
           :tag     => 'ovn-db-set-connections',
@@ -224,20 +274,59 @@ describe 'ovn::northd' do
   end
 
   shared_examples_for 'ovn northd' do
-    it 'starts northd' do
-      is_expected.to contain_service('northd').with(
-        :ensure => true,
-        :name   => platform_params[:ovn_northd_service_name],
-        :enable => true,
-      )
+    context 'with defaults' do
+      it 'starts northd' do
+        is_expected.to contain_service('northd').with(
+          :ensure => true,
+          :name   => platform_params[:ovn_northd_service_name],
+          :enable => true,
+        )
+      end
+
+      it 'installs package' do
+        is_expected.to contain_package('ovn-northd').with(
+          :ensure => 'present',
+          :name   => platform_params[:ovn_northd_package_name],
+          :notify => 'Service[northd]'
+        )
+      end
+
+      it 'should not manage inactivity probe' do
+        is_expected.to_not contain_exec('ovn-nb-set-inactivity-probe')
+        is_expected.to_not contain_exec('ovn-sb-set-inactivity-probe')
+      end
     end
 
-    it 'installs package' do
-      is_expected.to contain_package('ovn-northd').with(
-        :ensure => 'present',
-        :name   => platform_params[:ovn_northd_package_name],
-        :notify => 'Service[northd]'
-      )
+    context 'with nb db inactivity probe' do
+      let :params do
+        {
+          :ovn_nb_db_inactivity_probe => 60000,
+        }
+      end
+
+      it { is_expected.to contain_exec('ovn-nb-set-inactivity-probe').with(
+        :command => ['ovn-nbctl', 'set', 'connection', '.', 'inactivity_probe=60000'],
+        :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+        :unless  => 'test "$(sudo ovn-nbctl get connection . inactivity_probe)" = "60000"',
+        :tag     => 'ovn-db-set-inactivity-probe',
+      ) }
+      it { is_expected.to_not contain_exec('ovn-sb-set-inactivity-probe') }
+    end
+
+    context 'with sb db inactivity probe' do
+      let :params do
+        {
+          :ovn_sb_db_inactivity_probe => 60000,
+        }
+      end
+
+      it { is_expected.to_not contain_exec('ovn-nb-set-inactivity-probe') }
+      it { is_expected.to contain_exec('ovn-sb-set-inactivity-probe').with(
+        :command => ['ovn-sbctl', 'set', 'connection', '.', 'inactivity_probe=60000'],
+        :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+        :unless  => 'test "$(sudo ovn-sbctl get connection . inactivity_probe)" = "60000"',
+        :tag     => 'ovn-db-set-inactivity-probe',
+      ) }
     end
   end
 
@@ -276,4 +365,3 @@ describe 'ovn::northd' do
     end
   end
 end
-

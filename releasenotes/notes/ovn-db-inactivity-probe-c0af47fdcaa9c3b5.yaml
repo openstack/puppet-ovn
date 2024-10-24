@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    The following parameters have been added to the ``ovn::northed`` class.
+
+    - ``ovn_nb_db_inactivity_probe``
+    - ``ovn_sb_db_inactivity_probe``
