@@ -145,7 +145,7 @@ class ovn::controller(
   Stdlib::Absolutepath $environment_file_path,
   String[1] $opts_envvar_name,
   String $ovn_remote,
-  String $ovn_encap_ip,
+  Stdlib::IP::Address $ovn_encap_ip,
   String $package_ensure                                            = 'present',
   Variant[String[1], Array[String[1]]] $ovn_encap_type              = 'geneve',
   Optional[Variant[String, Integer]] $ovn_encap_tos                 = undef,
