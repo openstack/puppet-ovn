@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    The ``ovn::controller::ovn_encap_ip`` parameter now accepts array of IP
+    addresses.
+
+  - |
+    The new ``ovn::controller::ovn_encap_ip_default`` parameter has been added.

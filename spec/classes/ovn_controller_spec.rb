@@ -4,8 +4,8 @@ describe 'ovn::controller' do
 
   let :params do
     {
-      :ovn_remote   => 'tcp:x.x.x.x:5000',
-      :ovn_encap_ip => '1.2.3.4',
+      :ovn_remote   => 'tcp:192.0.2.101:5000',
+      :ovn_encap_ip => '192.0.2.201',
     }
   end
 
@@ -54,6 +54,9 @@ describe 'ovn::controller' do
         is_expected.to contain_vs_config('external_ids:ovn-bridge').with(
           :value => 'br-int',
         )
+        is_expected.to contain_vs_config('external_ids:ovn-encap-ip-default').with(
+          :ensure => 'absent',
+        )
         is_expected.to contain_vs_config('external_ids:ovn-cms-options').with(
           :ensure => 'absent',
         )
@@ -93,20 +96,21 @@ describe 'ovn::controller' do
     context 'with parameters' do
       before do
         params.merge!({
-          :ovn_encap_type              => 'vxlan',
-          :ovn_encap_tos               => 0,
-          :ovn_bridge_mappings         => ['physnet-1:br-1'],
-          :ovn_bridge                  => 'br-custom',
-          :bridge_interface_mappings   => ['br-1:eth1'],
-          :hostname                    => 'server1.example.com',
-          :ovn_cms_options             => ['cms_option1', 'cms_option2:foo'],
-          :ovn_remote_probe_interval   => 30000,
-          :ovn_openflow_probe_interval => 8,
-          :ovn_monitor_all             => true,
-          :ovn_transport_zones         => ['tz1'],
-          :enable_ovn_match_northd     => false,
-          :ovn_chassis_mac_map         => ['physnet1:aa:bb:cc:dd:ee:ff',
-                                           'physnet2:bb:aa:cc:dd:ee:ff'],
+          :ovn_encap_type               => 'vxlan',
+          :ovn_encap_ip_default         => '192.0.2.201',
+          :ovn_encap_tos                => 0,
+          :ovn_bridge_mappings          => ['physnet-1:br-1'],
+          :ovn_bridge                   => 'br-custom',
+          :bridge_interface_mappings    => ['br-1:eth1'],
+          :hostname                     => 'server1.example.com',
+          :ovn_cms_options              => ['cms_option1', 'cms_option2:foo'],
+          :ovn_remote_probe_interval    => 30000,
+          :ovn_openflow_probe_interval  => 8,
+          :ovn_monitor_all              => true,
+          :ovn_transport_zones          => ['tz1'],
+          :enable_ovn_match_northd      => false,
+          :ovn_chassis_mac_map          => ['physnet1:aa:bb:cc:dd:ee:ff',
+                                            'physnet2:bb:aa:cc:dd:ee:ff'],
           :ovn_ofctrl_wait_before_clear => 9000
         })
       end
@@ -126,6 +130,9 @@ describe 'ovn::controller' do
         )
         is_expected.to contain_vs_config('external_ids:ovn-bridge').with(
           :value => params[:ovn_bridge],
+        )
+        is_expected.to contain_vs_config('external_ids:ovn-encap-ip-default').with(
+          :value => params[:ovn_encap_ip_default],
         )
         is_expected.to contain_vs_config('external_ids:ovn-cms-options').with(
           :value => 'cms_option1,cms_option2:foo',
@@ -174,6 +181,20 @@ describe 'ovn::controller' do
             :require => 'Service[openvswitch]'
           )
         end
+      end
+    end
+
+    context 'when ovn_encap_ip is an Array' do
+      before :each do
+        params.merge!({
+          :ovn_encap_ip => ['192.0.2.201', '192.0.2.202']
+        })
+      end
+
+      it 'configures ovn-encap-ip' do
+        is_expected.to contain_vs_config('external_ids:ovn-encap-ip').with(
+          :value => '192.0.2.201,192.0.2.202',
+        )
       end
     end
 

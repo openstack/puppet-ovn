@@ -35,6 +35,10 @@
 #   (Optional) The encapsulation type to be used
 #   Defaults to 'geneve'
 #
+# [*ovn_encap_ip_default*]
+#   (Optional) When ovn-encap-ip contains multiple IPs, this field indicates
+#   the default one.
+#
 # [*ovn_encap_tos*]
 #   (Optional) The value to be applied to OVN tunnel interface's option:tos.
 #   Defaults to undef
@@ -145,9 +149,10 @@ class ovn::controller(
   Stdlib::Absolutepath $environment_file_path,
   String[1] $opts_envvar_name,
   String $ovn_remote,
-  Stdlib::IP::Address $ovn_encap_ip,
+  Variant[Stdlib::IP::Address, Array[Stdlib::IP::Address]] $ovn_encap_ip,
   String $package_ensure                                            = 'present',
   Variant[Ovn::EncapType, Array[Ovn::EncapType]] $ovn_encap_type    = 'geneve',
+  Optional[Stdlib::IP::Address] $ovn_encap_ip_default               = undef,
   Optional[Variant[String, Integer]] $ovn_encap_tos                 = undef,
   Ovn::BridgeMappings $ovn_bridge_mappings                          = [],
   Array[String[1]] $bridge_interface_mappings                       = [],
@@ -222,13 +227,23 @@ class ovn::controller(
   $config_items = {
     'external_ids:ovn-remote'                   => { 'value' => $ovn_remote },
     'external_ids:ovn-encap-type'               => { 'value' => join(any2array($ovn_encap_type), ',') },
-    'external_ids:ovn-encap-ip'                 => { 'value' => $ovn_encap_ip },
+    'external_ids:ovn-encap-ip'                 => { 'value' => join(any2array($ovn_encap_ip), ',') },
     'external_ids:hostname'                     => { 'value' => $hostname },
     'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
     'external_ids:ovn-remote-probe-interval'    => { 'value' => $ovn_remote_probe_interval },
     'external_ids:ovn-openflow-probe-interval'  => { 'value' => $ovn_openflow_probe_interval },
     'external_ids:ovn-monitor-all'              => { 'value' => $ovn_monitor_all },
     'external_ids:ovn-ofctrl-wait-before-clear' => { 'value' => $ovn_ofctrl_wait_before_clear },
+  }
+
+  if $ovn_encap_ip_default {
+    $encap_ip_default = {
+      'external_ids:ovn-encap-ip-default' => { 'value' => $ovn_encap_ip_default }
+    }
+  } else {
+    $encap_ip_default = {
+      'external_ids:ovn-encap-ip-default' => { 'ensure' => 'absent' }
+    }
   }
 
   if $ovn_cms_options {
@@ -321,7 +336,17 @@ class ovn::controller(
   }
   create_resources(
     'vs_config',
-    merge($config_items, $cms_options, $encap_tos, $chassis_mac_map, $bridge_items, $tz_items, $datapath_config, $ovn_match_northd)
+    merge(
+      $config_items,
+      $encap_ip_default,
+      $cms_options,
+      $encap_tos,
+      $chassis_mac_map,
+      $bridge_items,
+      $tz_items,
+      $datapath_config,
+      $ovn_match_northd
+    )
   )
 
   Vs_config<||> -> Service['controller']
