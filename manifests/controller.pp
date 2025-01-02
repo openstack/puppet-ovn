@@ -147,7 +147,7 @@ class ovn::controller(
   String $ovn_remote,
   Stdlib::IP::Address $ovn_encap_ip,
   String $package_ensure                                            = 'present',
-  Variant[String[1], Array[String[1]]] $ovn_encap_type              = 'geneve',
+  Variant[Ovn::EncapType, Array[Ovn::EncapType]] $ovn_encap_type    = 'geneve',
   Optional[Variant[String, Integer]] $ovn_encap_tos                 = undef,
   Ovn::BridgeMappings $ovn_bridge_mappings                          = [],
   Array[String[1]] $bridge_interface_mappings                       = [],
