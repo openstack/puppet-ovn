@@ -80,13 +80,6 @@
 #  (optional) Set probe interval, based on user configuration, value is in ms
 #  Defaults to 60000
 #
-# [*ovn_openflow_probe_interval*]
-#  (optional) The inactivity probe interval of the OpenFlow
-#  connection to the OpenvSwitch integration bridge, in
-#  seconds. If the value is zero, it disables the connection keepalive feature.
-#  If the value is nonzero, then it will be forced to a value of at least 5s.
-#  Defaults to 60
-#
 # [*ovn_transport_zones*]
 #  (optional) List of the transport zones to which the chassis belongs to.
 #  Defaults to empty list
@@ -143,6 +136,15 @@
 #   Additional command line options for ovn-controller service
 #   Defaults to []
 #
+# DEPRECATED PARAMETERS
+#
+# [*ovn_openflow_probe_interval*]
+#  (optional) The inactivity probe interval of the OpenFlow
+#  connection to the OpenvSwitch integration bridge, in
+#  seconds. If the value is zero, it disables the connection keepalive feature.
+#  If the value is nonzero, then it will be forced to a value of at least 5s.
+#  Defaults to undef
+#
 class ovn::controller(
   String[1] $service_name,
   String[1] $package_name,
@@ -163,8 +165,7 @@ class ovn::controller(
   Boolean $enable_dpdk                                              = false,
   Optional[Variant[String[1], Array[String[1]]]] $ovn_cms_options   = undef,
   Integer[0] $ovn_remote_probe_interval                             = 60000,
-  Integer[0] $ovn_openflow_probe_interval                           = 60,
-  Array[String[1]] $ovn_transport_zones                                = [],
+  Array[String[1]] $ovn_transport_zones                             = [],
   Boolean $enable_ovn_match_northd                                  = false,
   Variant[Array[String], Hash[String, String]] $ovn_chassis_mac_map = [],
   Boolean $ovn_monitor_all                                          = false,
@@ -174,6 +175,8 @@ class ovn::controller(
   Optional[Stdlib::Absolutepath] $ovn_controller_ssl_cert           = undef,
   Optional[Stdlib::Absolutepath] $ovn_controller_ssl_ca_cert        = undef,
   Array[String[1]] $ovn_controller_extra_opts                       = [],
+  # DEPRECATED PARAMETERS
+  Optional[Integer[0]] $ovn_openflow_probe_interval                 = undef,
 ) {
 
   if $enable_dpdk and ! $datapath_type {
@@ -231,9 +234,21 @@ class ovn::controller(
     'external_ids:hostname'                     => { 'value' => $hostname },
     'external_ids:ovn-bridge'                   => { 'value' => $ovn_bridge },
     'external_ids:ovn-remote-probe-interval'    => { 'value' => $ovn_remote_probe_interval },
-    'external_ids:ovn-openflow-probe-interval'  => { 'value' => $ovn_openflow_probe_interval },
     'external_ids:ovn-monitor-all'              => { 'value' => $ovn_monitor_all },
     'external_ids:ovn-ofctrl-wait-before-clear' => { 'value' => $ovn_ofctrl_wait_before_clear },
+  }
+
+  if $ovn_openflow_probe_interval != undef {
+    warning("The ovn_openflow_probe_interval parameter was deprecated and \
+will be removed in a future release.")
+
+    $of_probe_interval = {
+      'external_ids:ovn-openflow-probe-interval' => { 'value' => $ovn_openflow_probe_interval },
+    }
+  } else {
+    $of_probe_interval = {
+      'external_ids:ovn-openflow-probe-interval' => { 'ensure' => 'absent' },
+    }
   }
 
   if $ovn_encap_ip_default {
@@ -338,6 +353,7 @@ class ovn::controller(
     'vs_config',
     merge(
       $config_items,
+      $of_probe_interval,
       $encap_ip_default,
       $cms_options,
       $encap_tos,

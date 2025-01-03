@@ -1,0 +1,12 @@
+---
+upgrade:
+  - |
+    The ``external_ids:ovn-openflow-probe-interval`` option is now unset by
+    default. Set the ``ovn::controller::ovn_openflow_probe_interval`` parameter
+    explicitly to keep using the previous default value.
+
+deprecations:
+  - |
+    The ``ovn::controller::ovn_openflow_probe_interval`` parameter has been
+    deprecated, because the ``external_ids:ovn-openflow-probe-interval``
+    option of ovn-controller was removed in OVN 24.03 .

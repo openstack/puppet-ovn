@@ -67,7 +67,7 @@ describe 'ovn::controller' do
           :value => 60000,
         )
         is_expected.to contain_vs_config('external_ids:ovn-openflow-probe-interval').with(
-          :value => 60,
+          :ensure => 'absent',
         )
         is_expected.to contain_vs_config('external_ids:ovn-monitor-all').with(
           :value => false,
@@ -105,7 +105,7 @@ describe 'ovn::controller' do
           :hostname                     => 'server1.example.com',
           :ovn_cms_options              => ['cms_option1', 'cms_option2:foo'],
           :ovn_remote_probe_interval    => 30000,
-          :ovn_openflow_probe_interval  => 8,
+          :ovn_openflow_probe_interval  => 5,
           :ovn_monitor_all              => true,
           :ovn_transport_zones          => ['tz1'],
           :enable_ovn_match_northd      => false,
