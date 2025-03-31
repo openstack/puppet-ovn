@@ -7,7 +7,7 @@
         },
         {
             "name": "openstack/vswitch",
-            "version_requirement": ">=21.0.0 <22.0.0"
+            "version_requirement": ">=22.0.0 <23.0.0"
         }
     ],
     "issues_url": "https://bugs.launchpad.net/puppet-ovn",
@@ -48,5 +48,5 @@
     ],
     "source": "https://opendev.org/openstack/puppet-ovn.git",
     "summary": "Modules to setup ovn-northd and ovn-controller",
-    "version": "25.0.0"
+    "version": "26.0.0"
 }
