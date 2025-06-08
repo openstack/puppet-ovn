@@ -239,7 +239,7 @@ class ovn::northd(
     context => "/files${environment_file_path}",
     changes => "set ${opts_envvar_name} '\"${ovn_northd_opts}\"'",
     require => Package['ovn-northd'],
-    before  => Service['northd'],
+    notify  => Service['northd'],
   }
 
   service { 'northd':
