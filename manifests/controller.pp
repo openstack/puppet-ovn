@@ -351,7 +351,7 @@ will be removed in a future release.")
   }
   create_resources(
     'vs_config',
-    merge(
+    stdlib::merge(
       $config_items,
       $of_probe_interval,
       $encap_ip_default,
