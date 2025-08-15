@@ -143,7 +143,7 @@ class ovn::northd(
     }
     $ovn_northd_opts_cluster_local_addr = [
       "--db-nb-cluster-local-addr=${dbs_cluster_local_addr}",
-      "--db-sb-cluster-local-addr=${dbs_cluster_local_addr}"
+      "--db-sb-cluster-local-addr=${dbs_cluster_local_addr}",
     ]
   } else {
     $ovn_northd_opts_nb_cluster_local_proto = []
@@ -162,7 +162,7 @@ class ovn::northd(
     }
     $ovn_northd_opts_cluster_remote_addr = [
       "--db-nb-cluster-remote-addr=${dbs_cluster_remote_addr}",
-      "--db-sb-cluster-remote-addr=${dbs_cluster_remote_addr}"
+      "--db-sb-cluster-remote-addr=${dbs_cluster_remote_addr}",
     ]
   } else {
     $ovn_northd_opts_nb_cluster_remote_proto = []
@@ -186,7 +186,7 @@ class ovn::northd(
     $ovn_northd_ssl_opts = [
       "--ovn-northd-ssl-key=${ovn_northd_ssl_key}",
       "--ovn-northd-ssl-cert=${ovn_northd_ssl_cert}",
-      "--ovn-northd-ssl-ca-cert=${ovn_northd_ssl_ca_cert}"
+      "--ovn-northd-ssl-ca-cert=${ovn_northd_ssl_ca_cert}",
     ]
   } elsif ! ($ovn_northd_ssl_key or $ovn_northd_ssl_cert or $ovn_northd_ssl_ca_cert) {
     $ovn_northd_ssl_opts = []
@@ -198,7 +198,7 @@ class ovn::northd(
     $ovn_nb_db_ssl_opts = [
       "--ovn-nb-db-ssl-key=${ovn_nb_db_ssl_key}",
       "--ovn-nb-db-ssl-cert=${ovn_nb_db_ssl_cert}",
-      "--ovn-nb-db-ssl-ca-cert=${ovn_nb_db_ssl_ca_cert}"
+      "--ovn-nb-db-ssl-ca-cert=${ovn_nb_db_ssl_ca_cert}",
     ]
   } elsif ! ($ovn_nb_db_ssl_key or $ovn_nb_db_ssl_cert or $ovn_nb_db_ssl_ca_cert) {
     $ovn_nb_db_ssl_opts = []
@@ -210,7 +210,7 @@ class ovn::northd(
     $ovn_sb_db_ssl_opts = [
       "--ovn-sb-db-ssl-key=${ovn_sb_db_ssl_key}",
       "--ovn-sb-db-ssl-cert=${ovn_sb_db_ssl_cert}",
-      "--ovn-sb-db-ssl-ca-cert=${ovn_sb_db_ssl_ca_cert}"
+      "--ovn-sb-db-ssl-ca-cert=${ovn_sb_db_ssl_ca_cert}",
     ]
   } elsif ! ($ovn_sb_db_ssl_key or $ovn_sb_db_ssl_cert or $ovn_sb_db_ssl_ca_cert) {
     $ovn_sb_db_ssl_opts = []
@@ -271,7 +271,7 @@ class ovn::northd(
     path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
     unless  => "ovn-nbctl get-connection | egrep -e '^p${nb_protocol}:6641:${dbs_listen_ip_reg}$'",
     tag     => 'ovn-db-set-connections',
-    require => Service['northd']
+    require => Service['northd'],
   }
 
   $sb_protocol = $ovn_sb_db_ssl_key ? {
@@ -283,7 +283,7 @@ class ovn::northd(
     path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
     unless  => "ovn-sbctl get-connection | egrep -e ' p${sb_protocol}:6642:${dbs_listen_ip_reg}$'",
     tag     => 'ovn-db-set-connections',
-    require => Service['northd']
+    require => Service['northd'],
   }
 
   if $ovn_nb_db_inactivity_probe {

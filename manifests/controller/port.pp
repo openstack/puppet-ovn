@@ -10,6 +10,6 @@ define ovn::controller::port {
   $iface     = $map_split[1]
   vs_port { $iface:
     ensure => present,
-    bridge => $bridge
+    bridge => $bridge,
   }
 }

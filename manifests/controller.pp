@@ -210,7 +210,7 @@ class ovn::controller(
     $ovn_controller_ssl_opts = [
       "--ovn-controller-ssl-key=${ovn_controller_ssl_key}",
       "--ovn-controller-ssl-cert=${ovn_controller_ssl_cert}",
-      "--ovn-controller-ssl-ca-cert=${ovn_controller_ssl_ca_cert}"
+      "--ovn-controller-ssl-ca-cert=${ovn_controller_ssl_ca_cert}",
     ]
   } elsif ! ($ovn_controller_ssl_key or $ovn_controller_ssl_cert or $ovn_controller_ssl_ca_cert) {
     $ovn_controller_ssl_opts = []
@@ -253,47 +253,47 @@ will be removed in a future release.")
 
   if $ovn_encap_ip_default {
     $encap_ip_default = {
-      'external_ids:ovn-encap-ip-default' => { 'value' => $ovn_encap_ip_default }
+      'external_ids:ovn-encap-ip-default' => { 'value' => $ovn_encap_ip_default },
     }
   } else {
     $encap_ip_default = {
-      'external_ids:ovn-encap-ip-default' => { 'ensure' => 'absent' }
+      'external_ids:ovn-encap-ip-default' => { 'ensure' => 'absent' },
     }
   }
 
   if $ovn_cms_options {
     $cms_options = {
-      'external_ids:ovn-cms-options' => { 'value' => join(any2array($ovn_cms_options), ',') }
+      'external_ids:ovn-cms-options' => { 'value' => join(any2array($ovn_cms_options), ',') },
     }
   } else {
     $cms_options = {
-      'external_ids:ovn-cms-options' => { 'ensure' => 'absent' }
+      'external_ids:ovn-cms-options' => { 'ensure' => 'absent' },
     }
   }
 
   if $ovn_encap_tos {
     $encap_tos = {
-      'external_ids:ovn-encap-tos' => { 'value' => $ovn_encap_tos }
+      'external_ids:ovn-encap-tos' => { 'value' => $ovn_encap_tos },
     }
   } else {
     $encap_tos = {
-      'external_ids:ovn-encap-tos' => { 'ensure' => 'absent' }
+      'external_ids:ovn-encap-tos' => { 'ensure' => 'absent' },
     }
   }
 
   if !empty($ovn_chassis_mac_map) {
     if $ovn_chassis_mac_map =~ Hash {
       $chassis_mac_map = {
-        'external_ids:ovn-chassis-mac-mappings' => { 'value' => join(join_keys_to_values($ovn_chassis_mac_map, ':'), ',') }
+        'external_ids:ovn-chassis-mac-mappings' => { 'value' => join(join_keys_to_values($ovn_chassis_mac_map, ':'), ',') },
       }
     } else {
       $chassis_mac_map = {
-        'external_ids:ovn-chassis-mac-mappings' => { 'value' => join(any2array($ovn_chassis_mac_map), ',') }
+        'external_ids:ovn-chassis-mac-mappings' => { 'value' => join(any2array($ovn_chassis_mac_map), ',') },
       }
     }
   } else {
     $chassis_mac_map = {
-      'external_ids:ovn-chassis-mac-mappings' => { 'ensure' => 'absent' }
+      'external_ids:ovn-chassis-mac-mappings' => { 'ensure' => 'absent' },
     }
   }
 
@@ -306,48 +306,48 @@ will be removed in a future release.")
     }
 
     $bridge_items = {
-      'external_ids:ovn-bridge-mappings' => { 'value' => join(any2array($ovn_bridge_mappings_real), ',') }
+      'external_ids:ovn-bridge-mappings' => { 'value' => join(any2array($ovn_bridge_mappings_real), ',') },
     }
 
     if $manage_ovs_bridge {
       ovn::controller::bridge { $ovn_bridge_mappings_real:
         mac_table_size => $mac_table_size,
         before         => Service['controller'],
-        require        => Service['openvswitch']
+        require        => Service['openvswitch'],
       }
       ovn::controller::port { $bridge_interface_mappings:
         before  => Service['controller'],
-        require => Service['openvswitch']
+        require => Service['openvswitch'],
       }
     }
   } else {
     $bridge_items = {
-      'external_ids:ovn-bridge-mappings' => { 'ensure' => 'absent' }
+      'external_ids:ovn-bridge-mappings' => { 'ensure' => 'absent' },
     }
   }
 
   if !empty($ovn_transport_zones) {
     $tz_items = {
-      'external_ids:ovn-transport-zones' => { 'value' => join(any2array($ovn_transport_zones), ',') }
+      'external_ids:ovn-transport-zones' => { 'value' => join(any2array($ovn_transport_zones), ',') },
     }
   } else {
     $tz_items = {
-      'external_ids:ovn-transport-zones' => { 'ensure' => 'absent' }
+      'external_ids:ovn-transport-zones' => { 'ensure' => 'absent' },
     }
   }
 
   if $datapath_type {
     $datapath_config = {
-      'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type }
+      'external_ids:ovn-bridge-datapath-type' => { 'value' => $datapath_type },
     }
   } else {
     $datapath_config = {
-      'external_ids:ovn-bridge-datapath-type' => { 'ensure' => 'absent' }
+      'external_ids:ovn-bridge-datapath-type' => { 'ensure' => 'absent' },
     }
   }
 
   $ovn_match_northd = {
-    'external_ids:ovn-match-northd-version' => { 'value' => $enable_ovn_match_northd }
+    'external_ids:ovn-match-northd-version' => { 'value' => $enable_ovn_match_northd },
   }
   create_resources(
     'vs_config',
@@ -361,7 +361,7 @@ will be removed in a future release.")
       $bridge_items,
       $tz_items,
       $datapath_config,
-      $ovn_match_northd
+      $ovn_match_northd,
     )
   )
 

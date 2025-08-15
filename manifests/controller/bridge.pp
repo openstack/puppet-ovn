@@ -19,6 +19,6 @@ define ovn::controller::bridge(
   vs_bridge { $bridge:
     ensure         => present,
     mac_table_size => $mac_table_size,
-    external_ids   => "bridge-id=${bridge}"
+    external_ids   => "bridge-id=${bridge}",
   }
 }
