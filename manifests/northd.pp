@@ -1,4 +1,3 @@
-# ovn northd
 # == Class: ovn::northd
 #
 # installs ovn package starts the ovn-northd service
@@ -88,7 +87,7 @@
 #   Additional command line options for ovn-northd service
 #   Defaults to []
 #
-class ovn::northd(
+class ovn::northd (
   String[1] $package_name,
   String[1] $service_name,
   Stdlib::Absolutepath $environment_file_path,

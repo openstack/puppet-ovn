@@ -1,4 +1,3 @@
-# ovn controller bridge settings
 # == Define: ovn::controller::bridge
 #
 # Bridge settings for ovn controller bridge mappings
@@ -10,9 +9,9 @@
 #  Set the mac table size for the provider bridges
 #  Defaults to undef
 #
-define ovn::controller::bridge(
+define ovn::controller::bridge (
   Optional[Integer[0]] $mac_table_size = undef,
-){
+) {
   $map_split = split($name, ':')
   $bridge    = $map_split[1]
 

@@ -1,4 +1,3 @@
-# ovn controller
 # == Class: ovn::controller
 #
 # installs ovn and starts the ovn-controller service
@@ -145,7 +144,7 @@
 #  If the value is nonzero, then it will be forced to a value of at least 5s.
 #  Defaults to undef
 #
-class ovn::controller(
+class ovn::controller (
   String[1] $service_name,
   String[1] $package_name,
   Stdlib::Absolutepath $environment_file_path,
@@ -178,12 +177,10 @@ class ovn::controller(
   # DEPRECATED PARAMETERS
   Optional[Integer[0]] $ovn_openflow_probe_interval                 = undef,
 ) {
-
-  if $enable_dpdk and ! $datapath_type {
-    fail('Datapath type must be set when DPDK is enabled')
-  }
-
   if $enable_dpdk {
+    if ! $datapath_type {
+      fail('Datapath type must be set when DPDK is enabled')
+    }
     require vswitch::dpdk
   } else {
     require vswitch::ovs
@@ -296,7 +293,6 @@ will be removed in a future release.")
   }
 
   if !empty($ovn_bridge_mappings) {
-
     $ovn_bridge_mappings_real = $ovn_bridge_mappings ? {
       Hash    => join_keys_to_values($ovn_bridge_mappings, ':'),
       String  => $ovn_bridge_mappings.split(',').strip(),

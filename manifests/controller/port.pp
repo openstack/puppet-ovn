@@ -1,4 +1,3 @@
-# ovn controller bridge-port settings
 # == Define: ovn::controller::port
 #
 # Bridge-interface setting for ovn bridge mapping
