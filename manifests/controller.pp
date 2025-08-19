@@ -189,8 +189,6 @@ class ovn::controller(
     require vswitch::ovs
   }
 
-  include stdlib
-
   service { 'controller':
     ensure    => true,
     name      => $service_name,
