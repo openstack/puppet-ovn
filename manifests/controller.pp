@@ -151,7 +151,7 @@ class ovn::controller (
   String[1] $opts_envvar_name,
   String $ovn_remote,
   Variant[Stdlib::IP::Address, Array[Stdlib::IP::Address]] $ovn_encap_ip,
-  String $package_ensure                                            = 'present',
+  Stdlib::Ensure::Package $package_ensure                           = present,
   Variant[Ovn::EncapType, Array[Ovn::EncapType]] $ovn_encap_type    = 'geneve',
   Optional[Stdlib::IP::Address] $ovn_encap_ip_default               = undef,
   Optional[Variant[String, Integer]] $ovn_encap_tos                 = undef,
