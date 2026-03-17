@@ -242,7 +242,7 @@ class ovn::northd (
   }
 
   service { 'northd':
-    ensure  => true,
+    ensure  => 'running',
     enable  => true,
     name    => $service_name,
     require => Service['openvswitch'],
@@ -255,6 +255,30 @@ class ovn::northd (
     notify  => Service['northd'],
     require => Package['openvswitch'],
     tag     => 'ovn',
+  }
+
+  # NOTE(tkajinam): In Ubuntu starting ovn-central completes before its sub
+  # services(ovn-central, ovn-ovsdb-server-nb and ovn-ovsdb-server-sb) all
+  # start.
+  exec { 'ovn-wait-for-northd':
+    command     => ['sleep', '5'],
+    path        => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+    subscribe   => Service['northd'],
+    refreshonly => true,
+  }
+
+  exec { 'ovn-wait-for-nbdb':
+    command     => ['ovn-nbctl', 'show'],
+    path        => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+    subscribe   => Exec['ovn-wait-for-northd'],
+    refreshonly => true,
+  }
+
+  exec { 'ovn-wait-for-sbdb':
+    command     => ['ovn-sbctl', 'show'],
+    path        => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+    subscribe   => Exec['ovn-wait-for-northd'],
+    refreshonly => true,
   }
 
   # NOTE(tkajinam): We have to escapte [ and ] otherwise egrep intereprets
@@ -270,7 +294,7 @@ class ovn::northd (
     path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
     unless  => "ovn-nbctl get-connection | egrep -e '^p${nb_protocol}:6641:${dbs_listen_ip_reg}$'",
     tag     => 'ovn-db-set-connections',
-    require => Service['northd'],
+    require => Exec['ovn-wait-for-nbdb'],
   }
 
   $sb_protocol = $ovn_sb_db_ssl_key ? {
@@ -282,7 +306,7 @@ class ovn::northd (
     path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
     unless  => "ovn-sbctl get-connection | egrep -e ' p${sb_protocol}:6642:${dbs_listen_ip_reg}$'",
     tag     => 'ovn-db-set-connections',
-    require => Service['northd'],
+    require => Exec['ovn-wait-for-sbdb'],
   }
 
   if $ovn_nb_db_inactivity_probe {

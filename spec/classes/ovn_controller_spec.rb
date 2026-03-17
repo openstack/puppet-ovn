@@ -16,7 +16,7 @@ describe 'ovn::controller' do
 
     it 'starts controller' do
       is_expected.to contain_service('controller').with(
-        :ensure => true,
+        :ensure => 'running',
         :name   => platform_params[:ovn_controller_service_name],
         :enable => true,
         )

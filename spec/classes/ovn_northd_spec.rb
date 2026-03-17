@@ -277,7 +277,7 @@ describe 'ovn::northd' do
     context 'with defaults' do
       it 'starts northd' do
         is_expected.to contain_service('northd').with(
-          :ensure => true,
+          :ensure => 'running',
           :name   => platform_params[:ovn_northd_service_name],
           :enable => true,
         )

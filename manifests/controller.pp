@@ -187,7 +187,7 @@ class ovn::controller (
   }
 
   service { 'controller':
-    ensure    => true,
+    ensure    => 'running',
     name      => $service_name,
     enable    => true,
     subscribe => Vs_config['external_ids:ovn-remote'],
