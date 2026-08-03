@@ -20,14 +20,34 @@ describe 'ovn::northd' do
         is_expected.to contain_exec('ovn-nb-set-connection').with({
           :command => ['ovn-nbctl', 'set-connection', 'ptcp:6641:0.0.0.0'],
           :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :onlyif  => nil,
           :unless  => 'ovn-nbctl get-connection | egrep -e \'^ptcp:6641:0.0.0.0$\'',
           :tag     => 'ovn-db-set-connections',
         })
         is_expected.to contain_exec('ovn-sb-set-connection').with({
           :command => ['ovn-sbctl', 'set-connection', 'ptcp:6642:0.0.0.0'],
           :path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+          :onlyif  => nil,
           :unless  => 'ovn-sbctl get-connection | egrep -e \' ptcp:6642:0.0.0.0$\'',
           :tag     => 'ovn-db-set-connections',
+        })
+      end
+    end
+
+    context 'with clustered dbs' do
+      let :params do
+        {
+          :dbs_cluster_local_addr => '192.0.2.1'
+        }
+      end
+      it 'guards the set-connection execs on the local Raft leader role' do
+        is_expected.to contain_exec('ovn-nb-set-connection').with({
+          :onlyif  => 'ovn-appctl -t /var/run/ovn/ovnnb_db.ctl cluster/status OVN_Northbound | grep -q \'Role: leader\'',
+          :timeout => 15,
+        })
+        is_expected.to contain_exec('ovn-sb-set-connection').with({
+          :onlyif  => 'ovn-appctl -t /var/run/ovn/ovnsb_db.ctl cluster/status OVN_Southbound | grep -q \'Role: leader\'',
+          :timeout => 15,
         })
       end
     end
