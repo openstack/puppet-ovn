@@ -1,0 +1,12 @@
+---
+features:
+  - |
+    Add a new ``dbs_cluster_bootstrap_node`` parameter to the
+    ``ovn::northd`` class. When it is set to true, the
+    ``--db-nb-cluster-bootstrap-node`` and
+    ``--db-sb-cluster-bootstrap-node`` flags are passed to ovsdb-server
+    so that the node bootstraps a new OVN_Northbound and OVN_Southbound
+    raft cluster, instead of joining an existing one through
+    ``dbs_cluster_remote_addr``. This is needed for the first node of a
+    raft cluster: without the flags, ovsdb-server started against a
+    fresh database exits instead of forming the cluster.

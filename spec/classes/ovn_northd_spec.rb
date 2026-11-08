@@ -271,6 +271,50 @@ describe 'ovn::northd' do
 
       it { should raise_error(Puppet::Error, /The ovn_sb_db_ssl_key, cert and ca_cert are required to use SSL/) }
     end
+
+    context 'with raft cluster parameters' do
+      let :params do
+        {
+          :dbs_cluster_local_addr  => '192.0.2.1',
+          :dbs_cluster_remote_addr => '192.0.2.2',
+        }
+      end
+
+      it 'creates systemd conf' do
+        is_expected.to contain_augeas('config-ovn-northd').with({
+          :context => platform_params[:ovn_northd_context],
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
+                      "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
+                      " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes" +
+                      " --db-nb-cluster-local-addr=192.0.2.1 --db-sb-cluster-local-addr=192.0.2.1" +
+                      " --db-nb-cluster-remote-addr=192.0.2.2 --db-sb-cluster-remote-addr=192.0.2.2" +
+                      "\"'",
+        })
+      end
+    end
+
+    context 'with raft cluster bootstrap node' do
+      let :params do
+        {
+          :dbs_cluster_local_addr      => '192.0.2.1',
+          :dbs_cluster_remote_addr     => '192.0.2.2',
+          :dbs_cluster_bootstrap_node  => true,
+        }
+      end
+
+      it 'creates systemd conf' do
+        is_expected.to contain_augeas('config-ovn-northd').with({
+          :context => platform_params[:ovn_northd_context],
+          :changes => "set " + platform_params[:ovn_northd_opts_envvar_name] + " '\"" +
+                      "--db-nb-addr=0.0.0.0 --db-sb-addr=0.0.0.0" +
+                      " --db-nb-create-insecure-remote=yes --db-sb-create-insecure-remote=yes" +
+                      " --db-nb-cluster-local-addr=192.0.2.1 --db-sb-cluster-local-addr=192.0.2.1" +
+                      " --db-nb-cluster-remote-addr=192.0.2.2 --db-sb-cluster-remote-addr=192.0.2.2" +
+                      " --db-nb-cluster-bootstrap-node --db-sb-cluster-bootstrap-node" +
+                      "\"'",
+        })
+      end
+    end
   end
 
   shared_examples_for 'ovn northd' do
