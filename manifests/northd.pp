@@ -289,10 +289,16 @@ class ovn::northd (
     undef   => 'tcp',
     default => 'ssl'
   }
+  $ovn_nb_set_connection_onlyif = $dbs_cluster_local_addr ? {
+    undef   => undef,
+    default => "ovn-appctl -t /var/run/ovn/ovnnb_db.ctl cluster/status OVN_Northbound | grep -q 'Role: leader'",
+  }
   exec { 'ovn-nb-set-connection':
     command => ['ovn-nbctl', 'set-connection', "p${nb_protocol}:6641:${dbs_listen_ip_real}"],
     path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+    onlyif  => $ovn_nb_set_connection_onlyif,
     unless  => "ovn-nbctl get-connection | egrep -e '^p${nb_protocol}:6641:${dbs_listen_ip_reg}$'",
+    timeout => 15,
     tag     => 'ovn-db-set-connections',
     require => Exec['ovn-wait-for-nbdb'],
   }
@@ -301,10 +307,16 @@ class ovn::northd (
     undef   => 'tcp',
     default => 'ssl'
   }
+  $ovn_sb_set_connection_onlyif = $dbs_cluster_local_addr ? {
+    undef   => undef,
+    default => "ovn-appctl -t /var/run/ovn/ovnsb_db.ctl cluster/status OVN_Southbound | grep -q 'Role: leader'",
+  }
   exec { 'ovn-sb-set-connection':
     command => ['ovn-sbctl', 'set-connection', "p${sb_protocol}:6642:${dbs_listen_ip_real}"],
     path    => ['/sbin', '/usr/sbin', '/bin', '/usr/bin'],
+    onlyif  => $ovn_sb_set_connection_onlyif,
     unless  => "ovn-sbctl get-connection | egrep -e ' p${sb_protocol}:6642:${dbs_listen_ip_reg}$'",
+    timeout => 15,
     tag     => 'ovn-db-set-connections',
     require => Exec['ovn-wait-for-sbdb'],
   }
