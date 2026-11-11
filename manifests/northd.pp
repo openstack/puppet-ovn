@@ -31,6 +31,13 @@
 #   The IP-Address where OVN Clustered DBs sync from
 #   Defaults to undef
 #
+# [*dbs_cluster_bootstrap_node*]
+#   (Optional) Boolean. When true, ovn-ctl is passed the
+#   --db-nb-cluster-bootstrap-node and --db-sb-cluster-bootstrap-node
+#   flags so that this node bootstraps a new ovsdb raft cluster
+#   instead of joining an existing one.
+#   Defaults to false
+#
 # [*ovn_northd_nb_db*]
 #   NB DB address(es)
 #   Defaults to undef
@@ -96,6 +103,7 @@ class ovn::northd (
   String $dbs_listen_ip                                      = '0.0.0.0',
   Optional[String] $dbs_cluster_local_addr                   = undef,
   Optional[String] $dbs_cluster_remote_addr                  = undef,
+  Boolean $dbs_cluster_bootstrap_node                        = false,
   Optional[Variant[String, Array[String]]] $ovn_northd_nb_db = undef,
   Optional[Variant[String, Array[String]]] $ovn_northd_sb_db = undef,
   Optional[Stdlib::Absolutepath] $ovn_northd_ssl_key         = undef,
@@ -169,6 +177,14 @@ class ovn::northd (
     $ovn_northd_opts_cluster_remote_addr = []
   }
 
+  $ovn_northd_opts_cluster_bootstrap = $dbs_cluster_bootstrap_node ? {
+    true    => [
+      '--db-nb-cluster-bootstrap-node',
+      '--db-sb-cluster-bootstrap-node',
+    ],
+    default => [],
+  }
+
   $ovn_northd_nb_db_opts = $ovn_northd_nb_db ? {
     String        => ["--ovn-northd-nb-db=${ovn_northd_nb_db}"],
     Array[String] => ["--ovn-northd-nb-db=${join($ovn_northd_nb_db, ',')}"],
@@ -226,6 +242,7 @@ class ovn::northd (
                           $ovn_northd_opts_nb_cluster_remote_proto +
                           $ovn_northd_opts_sb_cluster_remote_proto +
                           $ovn_northd_opts_cluster_remote_addr +
+                          $ovn_northd_opts_cluster_bootstrap +
                           $ovn_northd_nb_db_opts +
                           $ovn_northd_sb_db_opts +
                           $ovn_northd_ssl_opts +
